@@ -1,5 +1,7 @@
-console.log("estowanie");
+import { GameManager } from "./pixi_env";
 
-console.log("kolejne ttestowanie");
-
-console.log("tttotototoototot");
+window.onload = () => {
+    const newGame = new GameManager();
+    console.log(newGame);
+    newGame.addTicker();
+};
