@@ -1,170 +1,181 @@
 import * as PIXI from "pixi.js";
-import { ArrayBoard,  Field, } from "./model/board";
+import { ArrayBoard, Field } from "./model/board";
 import { TetrisBoard } from "./tetrisBoard";
 import { Tetrimino } from "./model/tetimino";
 
-
-
 export class GameManager {
-    
-    private app:PIXI.Application;
+    private app: PIXI.Application;
     // public tetrisBlock1:PIXI.Sprite = new PIXI.Sprite();
     // public tetrisBlock2:PIXI.Sprite = new PIXI.Sprite();
     // public loaderPixi:PIXI.Loader = new PIXI.Loader();
-    public sprites: Array<PIXI.Sprite> = [];
-    public tetContainer:PIXI.Container = new PIXI.Container();
-    public boardContainer:PIXI.Container = new PIXI.Container();
+    // public sprites: Array<PIXI.Sprite> = [];
+    public tetContainer: PIXI.Container = new PIXI.Container();
+    public boardContainer: PIXI.Container = new PIXI.Container();
 
     public xField: Array<string> = [];
     public yLine: Array<Array<string>> = [];
 
-    private tetrisBoard:TetrisBoard ;
-    public tetrimino:Tetrimino = {
+    private tetrisBoard: TetrisBoard;
+    public tetrimino: Tetrimino = {
         type: "",
-        fields: []
-
+        fields: [],
     };
-    
-    
-   
 
-
-   
-    
-
-
-
-    public constructor(){
-        this.app = new PIXI.Application({width:600 , height:800, backgroundColor:0xEEEEEE});
+    public constructor() {
+        (<any>window).__PIXI_INSPECTOR_GLOBAL_HOOK__ &&
+            (<any>window).__PIXI_INSPECTOR_GLOBAL_HOOK__.register({
+                PIXI: PIXI,
+            });
+        this.app = new PIXI.Application({
+            width: 600,
+            height: 800,
+            backgroundColor: 0xeeeeee,
+        });
         document.body.appendChild(this.app.view);
         this.tetrisBoard = new TetrisBoard();
         // ['keydown' as const, 'keyup' as const]
-        ['keydown' as const].forEach(eventName => {
-            document.addEventListener(eventName, e => {
+        ["keydown" as const].forEach((eventName) => {
+            document.addEventListener(eventName, (e) => {
                 this.onKey(e);
-                
-                 
             });
         });
 
         this.init();
-     }
+    }
 
     public addTicker(): void {
-        const textureBlock = PIXI.Texture.from('/assets/images/tet.png');
-        const textureEmptyBlock = PIXI.Texture.from('/assets/images/tet_empty.png');
-        this.app.ticker.add((delta) =>{
-            let i=0;
-            this.sprites.forEach(sprite =>{
-                 if (this.tetrisBoard.getBoard()[i].value == "X"){
-                    sprite.texture = textureBlock;
-                 } else {
-                    sprite.texture = textureEmptyBlock;
-                 }
-                 i++;
-                })
+        const textureBlock = PIXI.Texture.from("/assets/images/tet.png");
+        const textureEmptyBlock = PIXI.Texture.from("/assets/images/tet_empty.png");
+        this.app.ticker.add((delta) => {
+            let i = 0;
+            this.boardContainer.children.forEach((element) => {
+                if (this.tetrisBoard.getBoard()[i].value == "X") {
+                    (element as PIXI.Sprite).texture = textureBlock;
+                } else {
+                    (element as PIXI.Sprite).texture = textureEmptyBlock;
+                }
+                i++;
+            });
 
-                // this.tetrimino = this.tetrisBoard.moveDown(this.tetrimino);
-                // console.log(this.tetrimino);
-                
-            })
+            // this.tetrimino = this.tetrisBoard.moveDown(this.tetrimino);
+            // console.log(this.tetrimino);
+        });
 
-            // this.tetrisBlock2.rotation += 0.01;
-            // this.tetrisBlock1.rotation += 0.005;
-        }
-       
-  
-    
-    public  init(){
+        // this.tetrisBlock2.rotation += 0.01;
+        // this.tetrisBlock1.rotation += 0.005;
+    }
+
+    public init() {
         // this.tetrisBoard.setAllFieldsInBoardRandom();
         // console.log(this.tetrisBoard.getBoard());
-       
+
         this.tetrimino = this.tetrisBoard.insertTeriminoO();
         // console.log(this.tetrisBoard.moveDown(this.tetrimino));
-        // move down nie działa nie poprawia współrzędnych????????????!!!!!!!!!!!!
 
-        
-        //init container - board               
-        this.boardContainer.width = this.tetrisBoard.COLS*24;
-        this.boardContainer.height = this.tetrisBoard.COLS*24;
+        // this.tetrisBoard.setField(85);
+        // this.tetrisBoard.setField(65);
+
+        //init container - board
+        this.boardContainer.width = this.tetrisBoard.COLS * 24;
+        this.boardContainer.height = this.tetrisBoard.COLS * 24;
         // this.boardContainer.pivot.set(this.boardContainer.width/2, this.boardContainer.height/2);
-        this.boardContainer.x= this.app.screen.width/2 - this.tetrisBoard.COLS*24/2;
-        this.boardContainer.y= this.app.screen.height/2 - this.tetrisBoard.ROWS*24/2;
+        this.boardContainer.x =
+            this.app.screen.width / 2 - (this.tetrisBoard.COLS * 24) / 2;
+        this.boardContainer.y =
+            this.app.screen.height / 2 - (this.tetrisBoard.ROWS * 24) / 2;
         console.log(this.boardContainer);
         this.app.stage.addChild(this.boardContainer);
 
         this.generateViewBoard();
-
-        
     }
-    
 
     private generateViewBoard() {
-        const textureBlock = PIXI.Texture.from('/assets/images/tet.png');
-        const textureEmptyBlock = PIXI.Texture.from('/assets/images/tet_empty.png');
+        const textureBlock = PIXI.Texture.from("/assets/images/tet.png");
+        const textureEmptyBlock = PIXI.Texture.from("/assets/images/tet_empty.png");
 
-        this.tetrisBoard.getBoard().forEach(field => {
+        this.tetrisBoard.getBoard().forEach((field) => {
             let block: PIXI.Sprite = new PIXI.Sprite();
-            if (field.value == "X"){
+            if (field.value == "X") {
                 block = PIXI.Sprite.from(textureBlock);
-            }else{
+            } else {
                 block = PIXI.Sprite.from(textureEmptyBlock);
             }
-            
+
             block.x = field.x * 24;
             block.y = field.y * 24;
             this.boardContainer.addChild(block);
-            this.sprites.push(block);
+            // this.sprites.push(block);
         });
     }
 
     onKey(e: KeyboardEvent) {
         console.log(e);
-        this.tetrimino = this.tetrisBoard.moveDown(this.tetrimino);
+        switch (e.key) {
+            case "ArrowDown":
+                {
+                    console.log(this.tetrisBoard.checkMove(this.tetrimino, "D"));
 
+                    if (this.tetrisBoard.checkMove(this.tetrimino, "D")) {
+                        this.tetrimino = this.tetrisBoard.moveDown(this.tetrimino);
+                    } else {
+                        this.tetrimino = this.tetrisBoard.insertTeriminoO();
+                        //dodanie nowego tetrimino po braku moźliwości ruchu w dół!!!!!
+                    }
+                }
+
+                break;
+            case "ArrowRight":
+                {
+                    // console.log(this.tetrisBoard.checkMove(this.tetrimino, "R"));
+
+                    // if (this.tetrisBoard.checkMove(this.tetrimino, "R")) {
+                        this.tetrimino = this.tetrisBoard.moveRight(this.tetrimino);
+                    // } else {
+                    //     // this.tetrimino = this.tetrisBoard.insertTeriminoO();
+                    // }
+                }
+
+                break;
+
+            default:
+                break;
+        }
     }
-    
 }
-
 
 //dodawanie sprite PIXI
 // // first block tetris
-        // let texture = PIXI.Texture.from('/assets/images/tet_1.png');
-        // this.tetrisBlock1 = PIXI.Sprite.from(texture);
-        // this.tetrisBlock1.anchor.x = 0.5;
-        // this.tetrisBlock1.anchor.y = 0.5;
-        // this.tetrisBlock1.x = this.app.screen.width / 2;
-        // this.tetrisBlock1.y = this.app.screen.height / 2;
-        // this.app.stage.addChild(this.tetrisBlock1);
+// let texture = PIXI.Texture.from('/assets/images/tet_1.png');
+// this.tetrisBlock1 = PIXI.Sprite.from(texture);
+// this.tetrisBlock1.anchor.x = 0.5;
+// this.tetrisBlock1.anchor.y = 0.5;
+// this.tetrisBlock1.x = this.app.screen.width / 2;
+// this.tetrisBlock1.y = this.app.screen.height / 2;
+// this.app.stage.addChild(this.tetrisBlock1);
 
-      
-        // this.tetrisBlock1.interactive=true;
-        // this.tetrisBlock1.on('pointertap', ()=> {
-        //     this.tetrisBlock1.y += 100;
-        //     if (this.tetrisBlock1.y >= this.app.screen.height){
-        //         this.tetrisBlock1.y = 100;
-        //     }
-        // })
+// this.tetrisBlock1.interactive=true;
+// this.tetrisBlock1.on('pointertap', ()=> {
+//     this.tetrisBlock1.y += 100;
+//     if (this.tetrisBlock1.y >= this.app.screen.height){
+//         this.tetrisBlock1.y = 100;
+//     }
+// })
 
-        // // second block tetris
-        // texture = PIXI.Texture.from('/assets/images/tet_2.png');
-        // this.tetrisBlock2 = PIXI.Sprite.from(texture);
-        // this.tetrisBlock2.anchor.x = 0.5;
-        // this.tetrisBlock2.anchor.y = 0.5;
-        // this.tetrisBlock2.x = 200;
-        // this.tetrisBlock2.y = 200;
-        // this.app.stage.addChild(this.tetrisBlock2);
-        // this.tetrisBlock2.interactive = true;
-        // this.tetrisBlock2.on('pointertap', () => {
-        //     this.tetrisBlock2.x +=100;
-        //     if (this.tetrisBlock2.x >= this.app.screen.width) {
-        //         this.tetrisBlock2.x = 100;
-        //     }
-        // })
-
-
-
-
+// // second block tetris
+// texture = PIXI.Texture.from('/assets/images/tet_2.png');
+// this.tetrisBlock2 = PIXI.Sprite.from(texture);
+// this.tetrisBlock2.anchor.x = 0.5;
+// this.tetrisBlock2.anchor.y = 0.5;
+// this.tetrisBlock2.x = 200;
+// this.tetrisBlock2.y = 200;
+// this.app.stage.addChild(this.tetrisBlock2);
+// this.tetrisBlock2.interactive = true;
+// this.tetrisBlock2.on('pointertap', () => {
+//     this.tetrisBlock2.x +=100;
+//     if (this.tetrisBlock2.x >= this.app.screen.width) {
+//         this.tetrisBlock2.x = 100;
+//     }
+// })
 
 // resources wykorzystanie przyklad
 
@@ -176,50 +187,45 @@ export class GameManager {
 // this.loaderPixi.onComplete.add((resources)=>{
 // console.log(resources.resources);
 
-
-
-
 // });
 
+// resources.resources.
+// conveert objects from resourses to aray
+// let resourcesArray = Object.keys(resources.resources).map((key) =>[key, resources.resources[key]]);
+// console.log(resourcesArray);
 
+// //generate sprites from resourses
+// resourcesArray.forEach(element =>{
+//     console.log(element[1].texture);
+//     this.sprites.push(PIXI.Sprite.from(element[1].texture));
+// })
 
- // resources.resources.
-            // conveert objects from resourses to aray
-            // let resourcesArray = Object.keys(resources.resources).map((key) =>[key, resources.resources[key]]);
-            // console.log(resourcesArray);
-            
-            // //generate sprites from resourses
-            // resourcesArray.forEach(element =>{
-            //     console.log(element[1].texture);
-            //     this.sprites.push(PIXI.Sprite.from(element[1].texture));
-            // })
+// console.log("Sprites loaded");
+// console.log(this.sprites);
 
-            // console.log("Sprites loaded");
-            // console.log(this.sprites);
+// this.sprites.forEach(element => {
+//     element.interactive = true;
+//     element.anchor.set(0.5);
+//     element.x = Math.random() * this.app.screen.width;
+//     element.y = Math.random() * this.app.screen.height;
+//     element.on("pointertap", () =>{
+//         element.rotation+= Math.PI/2;
+//     })
+//     this.app.stage.addChild(element);
+// })
 
-            // this.sprites.forEach(element => {
-            //     element.interactive = true;
-            //     element.anchor.set(0.5);
-            //     element.x = Math.random() * this.app.screen.width;
-            //     element.y = Math.random() * this.app.screen.height;
-            //     element.on("pointertap", () =>{
-            //         element.rotation+= Math.PI/2;
-            //     })
-            //     this.app.stage.addChild(element);
-            // })
-            
-            // //create the tetris block from element tet (tetContainer
-            // this.tetContainer.width = 96;
-            // this.tetContainer.height = 24;
-           
-            // for (let i = 0; i <4 ;i++) {
-            //     const element = PIXI.Sprite.from(resources.resources.tet.texture);
-            //     element.x = i*24;
-            //     element.y = 0;
-            //     this.tetContainer.addChild(element);
-            // }
-            // this.tetContainer.x = 0;
-            // this.tetContainer.y = 0;
-            // // this.tetContainer.pivot.x = this.tetContainer.width /2;
-            // // this.tetContainer.pivot.y = this.tetContainer.height /2;
-            // this.app.stage.addChild(this.tetContainer);
+// //create the tetris block from element tet (tetContainer
+// this.tetContainer.width = 96;
+// this.tetContainer.height = 24;
+
+// for (let i = 0; i <4 ;i++) {
+//     const element = PIXI.Sprite.from(resources.resources.tet.texture);
+//     element.x = i*24;
+//     element.y = 0;
+//     this.tetContainer.addChild(element);
+// }
+// this.tetContainer.x = 0;
+// this.tetContainer.y = 0;
+// // this.tetContainer.pivot.x = this.tetContainer.width /2;
+// // this.tetContainer.pivot.y = this.tetContainer.height /2;
+// this.app.stage.addChild(this.tetContainer);

@@ -6,7 +6,8 @@
   "scripts": {
     "build": "webpack",
     "serve": "webpack-dev-server",
-    "test": ""
+    "test": "",
+    "serve2" : "webpack serve --hot --host 0.0.0.0 --env=dev --mode=development"
   },
   "author": "Lalewicz Tomasz",
   "license": "ISC",
