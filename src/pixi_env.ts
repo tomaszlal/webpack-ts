@@ -69,7 +69,7 @@ export class GameManager {
         // this.tetrisBoard.setAllFieldsInBoardRandom();
         // console.log(this.tetrisBoard.getBoard());
 
-        this.tetrimino = this.tetrisBoard.insertTeriminoO();
+        this.tetrimino = this.tetrisBoard.insertTeriminoI();
         // console.log(this.tetrisBoard.moveDown(this.tetrimino));
 
         // this.tetrisBoard.setField(85);
@@ -118,7 +118,7 @@ export class GameManager {
                     if (this.tetrisBoard.checkMove(this.tetrimino, "D")) {
                         this.tetrimino = this.tetrisBoard.moveDown(this.tetrimino);
                     } else {
-                        this.tetrimino = this.tetrisBoard.insertTeriminoO();
+                        this.tetrimino = this.tetrisBoard.insertTeriminoI();
                         //dodanie nowego tetrimino po braku moźliwości ruchu w dół!!!!!
                     }
                 }
@@ -126,17 +126,34 @@ export class GameManager {
                 break;
             case "ArrowRight":
                 {
-                    // console.log(this.tetrisBoard.checkMove(this.tetrimino, "R"));
+                    console.log(this.tetrisBoard.checkMove(this.tetrimino, "R"));
 
-                    // if (this.tetrisBoard.checkMove(this.tetrimino, "R")) {
+                    if (this.tetrisBoard.checkMove(this.tetrimino, "R")) {
                         this.tetrimino = this.tetrisBoard.moveRight(this.tetrimino);
-                    // } else {
-                    //     // this.tetrimino = this.tetrisBoard.insertTeriminoO();
-                    // }
+                    } else {
+                        // this.tetrimino = this.tetrisBoard.insertTeriminoO();
+                    }
                 }
 
                 break;
-
+            case "ArrowLeft":
+                {
+                    console.log(this.tetrisBoard.checkMove(this.tetrimino, "L"));
+    
+                    if (this.tetrisBoard.checkMove(this.tetrimino, "L")) {
+                        this.tetrimino = this.tetrisBoard.moveLeft(this.tetrimino);
+                    } else {
+                        // this.tetrimino = this.tetrisBoard.insertTeriminoO();
+                    }
+                }
+    
+                break;
+            case "ArrowUp":
+                {
+                    this.tetrimino = this.tetrisBoard.rotate(this.tetrimino);
+                }
+        
+                break;
             default:
                 break;
         }
