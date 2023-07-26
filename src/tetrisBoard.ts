@@ -1,5 +1,7 @@
 import { ArrayBoard, Field } from "./model/board";
+import { Directions } from "./model/directions";
 import { Tetrimino } from "./model/tetimino";
+import { TypeOfTet } from "./model/type_of_tet";
 
 export class TetrisBoard {
 
@@ -29,30 +31,37 @@ export class TetrisBoard {
         }
     }
 
-    public setAllFieldsInBoardRandom(): void {
-        this.board = [];
-        for (let y = 0; y < this.ROWS; y++) {
-            for (let x = 0; x < this.COLS; x++) {
-                const field: Field = {
-                    "x": x,
-                    "y": y,
-                    "value": ""
-                }
-                if (Math.random() > 0.5) {
-                    field.value = "0";
-                } else {
-                    field.value = "X";
-                }
-                this.board.push(field);
-            }
+    // public setAllFieldsInBoardRandom(): void {
+    //     this.board = [];
+    //     for (let y = 0; y < this.ROWS; y++) {
+    //         for (let x = 0; x < this.COLS; x++) {
+    //             const field: Field = {
+    //                 "x": x,
+    //                 "y": y,
+    //                 "value": ""
+    //             }
+    //             if (Math.random() > 0.5) {
+    //                 field.value = "0";
+    //             } else {
+    //                 field.value = "X";
+    //             }
+    //             this.board.push(field);
+    //         }
 
-        }
-    }
+    //     }
+    // }
 
-    public setField(field: number): void {
+    // public setField(field: number): void {
+    //     this.board.forEach(element => {
+    //         if (element === this.board[field]) {
+    //             element.value = "X";
+    //         }
+    //     })
+    // }
+    public setField(field: number, typeOfTet: TypeOfTet): void {
         this.board.forEach(element => {
             if (element === this.board[field]) {
-                element.value = "X";
+                element.value = typeOfTet;
             }
         })
     }
@@ -66,8 +75,7 @@ export class TetrisBoard {
     }
 
     private isEmpty(field: number): boolean {
-        if (this.board[field].value == "0") return true;
-        else return false;
+        return this.board[field].value == "0";
     }
 
 
@@ -79,35 +87,87 @@ export class TetrisBoard {
     // Tetrimino „S” – tetrimino „O” po przesunięciu dwóch górnych elementów w prawo
     // Tetrimino „Z” – tetrimino „O” po przesunięciu dwóch górnych elementów w lewo
 
-    public insertTeriminoO(): Tetrimino {
-        this.board[4].value = "X";
-        this.board[5].value = "X";
-        this.board[14].value = "X";
-        this.board[15].value = "X";
-        const tetrimino = {
-            "type": "O",
-            "fields": [15, 5, 4, 14]
+    // public insertTetriminoO(): Tetrimino {
+    //     const tetrimino = {
+    //         "type": TypeOfTet.O,
+    //         "fields": [15, 5, 4, 14]
+    //     }
+    //     tetrimino.fields.forEach(field => {
+    //         this.setField(field, tetrimino.type);
+    //     })
+    //     return tetrimino;
+    // }
+
+    // public insertTetriminoI(): Tetrimino {
+    //     const tetrimino = {
+    //         "type": TypeOfTet.I,
+    //         "fields": [14, 4, 34, 24]
+    //     }
+    //     tetrimino.fields.forEach(field => {
+    //         this.setField(field, tetrimino.type);
+    //     })
+    //     return tetrimino;
+    // }
+
+    // public insertTetriminoT(): Tetrimino {
+    //     const tetrimino = {
+    //         "type": TypeOfTet.T,
+    //         "fields": [4, 5, 6, 15]
+    //     }
+    //     tetrimino.fields.forEach(field => {
+    //         this.setField(field, tetrimino.type);
+    //     })
+    //     return tetrimino;
+    // }
+
+    public insertTetrimino(type: TypeOfTet): Tetrimino {
+        let tetrimino: Tetrimino = {
+            type,
+            fields: []
         }
+        switch (type) {
+            case TypeOfTet.I:
+                tetrimino.fields = [4, 14, 24, 34];
+                break;
+
+            case TypeOfTet.T:
+                tetrimino.fields = [4, 5, 6, 15];
+                break;
+
+            case TypeOfTet.O:
+                tetrimino.fields = [4, 5, 14, 15];
+                break;
+
+            case TypeOfTet.L:
+                tetrimino.fields = [4, 14, 24, 25];
+                break;
+
+            case TypeOfTet.J:
+                tetrimino.fields = [5, 15, 25, 24];
+                break;
+
+            case TypeOfTet.S:
+                tetrimino.fields = [4, 5, 15, 16];
+                break;
+
+            case TypeOfTet.Z:
+                tetrimino.fields = [5, 6, 14, 15];
+                break;
+
+            default:
+                tetrimino.fields = [4, 5, 14, 15];
+                break;
+        }
+        tetrimino.fields.forEach(field => {
+            this.setField(field, tetrimino.type);
+        })
         return tetrimino;
     }
 
-    public insertTeriminoI(): Tetrimino {
-        this.board[4].value = "X";
-        this.board[14].value = "X";
-        this.board[24].value = "X";
-        this.board[34].value = "X";
-        const tetrimino = {
-            "type": "I",
-            "fields": [14, 4, 34, 24]
-        }
-        return tetrimino;
-    }
-
-    public checkMove(tetrimino: Tetrimino, direction: string): boolean {    //direction:  "R" or "L" or "D"
-
+    public checkMove(tetrimino: Tetrimino, direction: Directions): boolean {    //direction:  "R" or "L" or "D"
         let isMovePossible = false;
         switch (direction) {
-            case "D": {
+            case Directions.DOWN: {
                 isMovePossible = true;
                 let checkList: Array<boolean> = [];
                 tetrimino.fields.forEach(field => {         //sprawdzenie wszystkich pol w tetermino
@@ -115,7 +175,7 @@ export class TetrisBoard {
                         console.log(field);
                         if (field + this.COLS < this.COLS * this.ROWS) { //jeżeli pole +10(szerokosc planszy) nie wychodzi poza wielkosc planszy
                             checkList.push(true);
-                            if (this.board[field + this.COLS].value == "0") {       //czy poniżej jednego z najniższego pola planszy znajduje się 
+                            if (this.isEmpty(field + this.COLS)) {       //czy poniżej jednego z najniższego pola planszy znajduje się 
                                 checkList.push(true);
                             } else {
                                 checkList.push(false);
@@ -131,14 +191,14 @@ export class TetrisBoard {
             }
 
                 break;
-            case "R": {
+            case Directions.RIGHT: {
                 isMovePossible = true;
                 let checkList: Array<boolean> = [];
                 tetrimino.fields.forEach(field => {
                     if (!tetrimino.fields.includes(field + 1)) {
                         if (field % this.COLS < this.COLS - 1) {
                             checkList.push(true);
-                            if (this.board[field + 1].value == "0") {
+                            if (this.isEmpty(field + 1)) {
                                 checkList.push(true);
                             } else {
                                 checkList.push(false);
@@ -153,14 +213,14 @@ export class TetrisBoard {
                 })
             }
                 break;
-            case "L": {
+            case Directions.LEFT: {
                 isMovePossible = true;
                 let checkList: Array<boolean> = [];
                 tetrimino.fields.forEach(field => {
                     if (!tetrimino.fields.includes(field - 1)) {
                         if (field % this.COLS > 0) {
                             checkList.push(true);
-                            if (this.board[field - 1].value == "0") {
+                            if (this.isEmpty(field - 1)) {
                                 checkList.push(true);
                             } else {
                                 checkList.push(false);
@@ -192,7 +252,7 @@ export class TetrisBoard {
             newTetrimino.fields.push(field + this.COLS);
         });
         newTetrimino.fields.forEach(field => {
-            this.setField(field);
+            this.setField(field, newTetrimino.type);
         });
         return newTetrimino;
     }
@@ -207,7 +267,7 @@ export class TetrisBoard {
             newTetrimino.fields.push(field + 1);
         });
         newTetrimino.fields.forEach(field => {
-            this.setField(field);
+            this.setField(field, newTetrimino.type);
         });
         return newTetrimino;
 
@@ -223,7 +283,7 @@ export class TetrisBoard {
             newTetrimino.fields.push(field - 1);
         });
         newTetrimino.fields.forEach(field => {
-            this.setField(field);
+            this.setField(field, newTetrimino.type);
         });
         return newTetrimino;
 
@@ -237,44 +297,45 @@ export class TetrisBoard {
         };
         const min = Math.min(...tetrimino.fields);
         const max = Math.max(...tetrimino.fields);
-        const middle = tetrimino.fields.sort((a, b) => a - b)[1];
-        if (max - min == 30) {   // tetriminoI ustawione pionowo
-            console.log(min, max, middle);
-            if (this.isEmpty(middle - 1) && this.isEmpty(middle + 1) && this.isEmpty(middle + 2)
-                && Math.floor((middle - 1) / this.COLS) == Math.floor((middle + 1) / this.COLS)
-                && Math.floor((middle + 1) / this.COLS) == Math.floor((middle + 2) / this.COLS)) {
-                console.log("da sie");
-                tetrimino.fields.forEach(field => {
-                    this.clearField(field);
-                })
-                for (let i = -1; i < 3; i++) {
-                    this.setField(middle + i);
-                    newTetrimino.fields.push(middle + i);
-                }
-                return newTetrimino;
-            }
-        } else {
-            if ((middle + this.COLS < this.COLS * this.ROWS) && (middle + 2 * this.COLS < this.COLS * this.ROWS)) {
-                if (this.isEmpty(middle + this.COLS) && this.isEmpty(middle + 2 * this.COLS)) {
-                    console.log("da sie2");
-                    tetrimino.fields.forEach(field => {
-                        this.clearField(field);
-                    })
-                    for (let i = -this.COLS; i < 3*this.COLS; i+=this.COLS) {
-                        this.setField(middle + i);
-                        newTetrimino.fields.push(middle + i);
+        switch (tetrimino.type) {
+            case TypeOfTet.I:
+                const middle = tetrimino.fields.sort((a, b) => a - b)[1];
+                if (max - min == 30) {   // tetriminoI set vertical alignment
+                    console.log(min, max, middle);
+                    if (this.isEmpty(middle - 1) && this.isEmpty(middle + 1) && this.isEmpty(middle + 2)
+                        && Math.floor((middle - 1) / this.COLS) == Math.floor((middle + 1) / this.COLS)
+                        && Math.floor((middle + 1) / this.COLS) == Math.floor((middle + 2) / this.COLS)) {
+                        console.log("da sie");
+                        tetrimino.fields.forEach(field => {
+                            this.clearField(field);
+                        })
+                        for (let i = -1; i < 3; i++) {
+                            this.setField(middle + i, newTetrimino.type);
+                            newTetrimino.fields.push(middle + i);
+                        }
+                        return newTetrimino;
                     }
-                    return newTetrimino;
+                } else {
+                    if ((middle + this.COLS < this.COLS * this.ROWS) && (middle + 2 * this.COLS < this.COLS * this.ROWS)) {
+                        if (this.isEmpty(middle + this.COLS) && this.isEmpty(middle + 2 * this.COLS)) {
+                            console.log("da sie2");
+                            tetrimino.fields.forEach(field => {
+                                this.clearField(field);
+                            })
+                            for (let i = -this.COLS; i < 3 * this.COLS; i += this.COLS) {
+                                this.setField(middle + i, newTetrimino.type);
+                                newTetrimino.fields.push(middle + i);
+                            }
+                            return newTetrimino;
+                        }
+                    }
+
+
                 }
-            }
+                break;
 
 
         }
-
-
-
-
-
 
         return tetrimino;
     }
