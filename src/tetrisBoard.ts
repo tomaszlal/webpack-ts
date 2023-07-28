@@ -1,3 +1,4 @@
+import { PI_2 } from "pixi.js";
 import { ArrayBoard, Field } from "./model/board";
 import { Directions } from "./model/directions";
 import { Tetrimino } from "./model/tetimino";
@@ -78,6 +79,15 @@ export class TetrisBoard {
         return this.board[field].value == "0";
     }
 
+    private areInTheSameLine(fields: Array<number>): boolean {
+        let sameLine: boolean = true;
+        let line: number = Math.floor(fields.shift() as number / this.COLS);
+        fields.forEach(field => {
+            sameLine = (Math.floor(field / this.COLS) == line) && sameLine
+        })
+        return sameLine;
+    }
+
 
     // Tetrimino „I” – cztery elementy w jednym szeregu
     // Tetrimino „T” – trzy elementy w rzędzie i jeden dołączony do środkowego elementu
@@ -119,6 +129,7 @@ export class TetrisBoard {
     //     })
     //     return tetrimino;
     // }
+
 
     public insertTetrimino(type: TypeOfTet): Tetrimino {
         let tetrimino: Tetrimino = {
@@ -297,14 +308,19 @@ export class TetrisBoard {
         };
         const min = Math.min(...tetrimino.fields);
         const max = Math.max(...tetrimino.fields);
+        tetrimino.fields = tetrimino.fields.sort((a, b) => a - b);
+
         switch (tetrimino.type) {
             case TypeOfTet.I:
-                const middle = tetrimino.fields.sort((a, b) => a - b)[1];
+                const middle = tetrimino.fields[1];
                 if (max - min == 30) {   // tetriminoI set vertical alignment
                     console.log(min, max, middle);
+                    let arrForTestLine: Array<number> = [];
+                    for (let i = -1; i < 3; i++) {
+                        arrForTestLine.push(middle + i);
+                    }
                     if (this.isEmpty(middle - 1) && this.isEmpty(middle + 1) && this.isEmpty(middle + 2)
-                        && Math.floor((middle - 1) / this.COLS) == Math.floor((middle + 1) / this.COLS)
-                        && Math.floor((middle + 1) / this.COLS) == Math.floor((middle + 2) / this.COLS)) {
+                        && this.areInTheSameLine(arrForTestLine)) {
                         console.log("da sie");
                         tetrimino.fields.forEach(field => {
                             this.clearField(field);
@@ -333,7 +349,130 @@ export class TetrisBoard {
 
                 }
                 break;
+            case TypeOfTet.T:
+                if (max - min == 11) {  //is in position T or reverse
+                    if (min + 1 == tetrimino.fields[1]) {
+                        if (min + 2 * this.COLS < this.COLS * this.ROWS && this.isEmpty(min + this.COLS) && this.isEmpty(min + 2 * this.COLS)) {
+                            tetrimino.fields.forEach(field => this.clearField(field));
+                            for (let i = 0; i < 3 * this.COLS; i += this.COLS) {
+                                newTetrimino.fields.push(min + i);
+                            }
+                            newTetrimino.fields.push(max);
+                            newTetrimino.fields.forEach(field => this.setField(field, newTetrimino.type));
+                            console.log(newTetrimino.fields);
+                            return newTetrimino;
+                        }
+                    } else {
+                        if (this.isEmpty(max - this.COLS) && this.isEmpty(max - 2 * this.COLS)) {
+                            tetrimino.fields.forEach(field => this.clearField(field));
+                            for (let i = 0; i > (-3 * this.COLS); i -= this.COLS) {
+                                newTetrimino.fields.push(max + i);
+                            }
+                            newTetrimino.fields.push(min);
+                            newTetrimino.fields.forEach(field => this.setField(field, newTetrimino.type));
+                            return newTetrimino;
+                        }
 
+                    }
+                } else {
+                    if (min + this.COLS + 1 == tetrimino.fields[2]) {
+                        let arrForTestLine: Array<number> = [];
+                        for (let i = 0; i < 3; i++) {
+                            arrForTestLine.push(max + i);
+                        }
+                        if (this.isEmpty(max + 1) && this.isEmpty(max + 2) && this.areInTheSameLine(arrForTestLine)) {
+                            for (let i = 0; i < 3; i++) {
+                                newTetrimino.fields.push(max + i);
+                            }
+                            newTetrimino.fields.push(tetrimino.fields[2]);
+                            tetrimino.fields.forEach(field => this.clearField(field));
+                            newTetrimino.fields.forEach(field => this.setField(field, newTetrimino.type));
+                            return newTetrimino;
+                        }
+                    } else {
+                        let arrForTestLine: Array<number> = [];
+                        for (let i = 0; i < 3; i++) {
+                            arrForTestLine.push(min - i);
+                        }
+                        if (this.isEmpty(min - 1) && this.isEmpty(min - 2) && this.areInTheSameLine(arrForTestLine)) {
+                            for (let i = 0; i < 3; i++) {
+                                newTetrimino.fields.push(min - i);
+                            }
+                            newTetrimino.fields.push(tetrimino.fields[1]);
+                            tetrimino.fields.forEach(field => this.clearField(field));
+                            newTetrimino.fields.forEach(field => this.setField(field, newTetrimino.type));
+                            return newTetrimino;
+                        }
+
+                    }
+
+
+                }
+                break;
+            case TypeOfTet.L:
+                if (max - min == 21) {
+                    if (min + 1 == tetrimino.fields[1]) { //axe shape
+                        let arrForTestLine: Array<number> = [];
+                        for (let i = 0; i < 3; i++) {
+                            arrForTestLine.push(min + this.COLS + i);
+                        }
+                        if (this.isEmpty(min + this.COLS) && this.isEmpty(min + this.COLS * 2) && this.isEmpty(min + this.COLS + 2) && this.areInTheSameLine(arrForTestLine)) {
+                            for (let i = 0; i < 3; i++) {
+                                newTetrimino.fields.push(min + this.COLS + i);
+                            }
+                            newTetrimino.fields.push(min + 2 * this.COLS);
+                            tetrimino.fields.forEach(field => this.clearField(field));
+                            newTetrimino.fields.forEach(field => this.setField(field, newTetrimino.type));
+                            return newTetrimino;
+                        }
+
+                    } else { //L-shape
+                        let arrForTestLine: Array<number> = [];
+                        for (let i = 0; i < 3; i++) {
+                            arrForTestLine.push(max - this.COLS - i);
+                        }
+                        if (this.isEmpty(min + 1) && this.isEmpty(max - this.COLS) && this.isEmpty(max - this.COLS - 2) && this.areInTheSameLine(arrForTestLine)) {
+                            for (let i = 0; i < 3; i++) {
+                                newTetrimino.fields.push(max - this.COLS - i);
+                            }
+                            newTetrimino.fields.push(min + 1);
+                            tetrimino.fields.forEach(field => this.clearField(field));
+                            newTetrimino.fields.forEach(field => this.setField(field, newTetrimino.type));
+                            return newTetrimino;
+
+
+                        }
+                    }
+
+
+                } else {//horizontal
+
+                    if (min + 1 == tetrimino.fields[1]) {
+                        if (this.isEmpty(max + 1) && this.isEmpty(max + 2) && this.isEmpty(max - 19)) {
+                            for (let i = 0; i < 3; i++) {
+                                newTetrimino.fields.push(max + 1 - i * this.COLS);
+                            }
+                            newTetrimino.fields.push(max + 2);
+                            tetrimino.fields.forEach(field => this.clearField(field));
+                            newTetrimino.fields.forEach(field => this.setField(field, newTetrimino.type));
+                            return newTetrimino;
+                        }
+
+                    } else {
+                        if (min - 1 + 2 * this.COLS < this.COLS * this.ROWS) {
+                            if (this.isEmpty(min - 1) && this.isEmpty(min - 2) && this.isEmpty(min + 19)) {
+                                for (let i = 0; i < 3; i++) {
+                                    newTetrimino.fields.push(min - 1 + i * this.COLS);
+                                }
+                                newTetrimino.fields.push(min - 2);
+                                tetrimino.fields.forEach(field => this.clearField(field));
+                                newTetrimino.fields.forEach(field => this.setField(field, newTetrimino.type));
+                                return newTetrimino;
+                            }
+                        }
+                    }
+                }
+                break;
 
         }
 

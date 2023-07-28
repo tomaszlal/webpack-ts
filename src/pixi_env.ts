@@ -112,7 +112,7 @@ export class GameManager {
 
         // this.tetrimino = this.tetrisBoard.insertTeriminoI();
         // this.tetrimino = this.tetrisBoard.insertTetriminoT();
-        this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.S)
+        this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.O)
     }
 
     private generateViewBoard() {
@@ -137,8 +137,8 @@ export class GameManager {
                     if (this.tetrisBoard.checkMove(this.tetrimino, Directions.DOWN)) {
                         this.tetrimino = this.tetrisBoard.moveDown(this.tetrimino);
                     } else {
+                        // this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.L);
 
-                        //this is the test 
                         let randOfType = Math.floor(Math.random() * (7 - 1 + 1) + 1);
                         switch (randOfType) {
                             case 1:
@@ -196,6 +196,7 @@ export class GameManager {
                 break;
             case "ArrowUp":
                 {
+
                     this.tetrimino = this.tetrisBoard.rotate(this.tetrimino);
                 }
 
