@@ -137,7 +137,7 @@ export class GameManager {
                     if (this.tetrisBoard.checkMove(this.tetrimino, Directions.DOWN)) {
                         this.tetrimino = this.tetrisBoard.moveDown(this.tetrimino);
                     } else {
-                        // this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.L);
+                        // this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.J);
 
                         let randOfType = Math.floor(Math.random() * (7 - 1 + 1) + 1);
                         switch (randOfType) {
