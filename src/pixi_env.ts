@@ -1,5 +1,4 @@
 import * as PIXI from "pixi.js";
-import { ArrayBoard, Field } from "./model/board";
 import { TetrisBoard } from "./tetrisBoard";
 import { Tetrimino } from "./model/tetimino";
 import { Directions } from "./model/directions";
@@ -13,6 +12,7 @@ export class GameManager {
     // public sprites: Array<PIXI.Sprite> = [];
     // public tetContainer: PIXI.Container = new PIXI.Container();
     public boardContainer: PIXI.Container = new PIXI.Container();
+    
 
     // public xField: Array<string> = [];
     // public yLine: Array<Array<string>> = [];
@@ -29,9 +29,9 @@ export class GameManager {
                 PIXI: PIXI,
             });
         this.app = new PIXI.Application({
-            width: 600,
-            height: 800,
-            backgroundColor: 0xeeeeee,
+            width: 1000,
+            height: 600,
+            backgroundColor: 0xbbbbbb,
         });
         document.body.appendChild(this.app.view);
         this.tetrisBoard = new TetrisBoard();
@@ -85,6 +85,7 @@ export class GameManager {
                 }
                 i++;
             });
+
         });
     }
 
@@ -112,7 +113,9 @@ export class GameManager {
 
         // this.tetrimino = this.tetrisBoard.insertTeriminoI();
         // this.tetrimino = this.tetrisBoard.insertTetriminoT();
-        this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.O)
+        this.randomTetrimino();
+
+
     }
 
     private generateViewBoard() {
@@ -132,53 +135,16 @@ export class GameManager {
         switch (e.key) {
             case "ArrowDown":
                 {
-                    console.log(this.tetrisBoard.checkMove(this.tetrimino, Directions.DOWN));
-
-                    if (this.tetrisBoard.checkMove(this.tetrimino, Directions.DOWN)) {
-                        this.tetrimino = this.tetrisBoard.moveDown(this.tetrimino);
-                    } else {
-                        // this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.J);
-
-                        let randOfType = Math.floor(Math.random() * (7 - 1 + 1) + 1);
-                        switch (randOfType) {
-                            case 1:
-                                this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.I);
-                                break;
-                            case 2:
-                                this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.T);
-                                break;
-                            case 3:
-                                this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.O);
-                                break;
-                            case 4:
-                                this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.L);
-                                break;
-                            case 5:
-                                this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.J);
-                                break;
-                            case 6:
-                                this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.S);
-                                break;
-                            case 7:
-                                this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.Z);
-                                break;
-                            default:
-                                break;
-                        }
-                        //dodanie nowego tetrimino po braku moźliwości ruchu w dół!!!!!
-                    }
+                    // console.log(this.tetrisBoard.checkMove(this.tetrimino, Directions.DOWN));
+                    this.goDown();
                 }
 
                 break;
             case "ArrowRight":
                 {
-                    console.log(this.tetrisBoard.checkMove(this.tetrimino, Directions.RIGHT));
-
                     if (this.tetrisBoard.checkMove(this.tetrimino, Directions.RIGHT)) {
                         this.tetrimino = this.tetrisBoard.moveRight(this.tetrimino);
-                    } else {
-                        // this.tetrimino = this.tetrisBoard.insertTeriminoO();
-                    }
+                    } 
                 }
 
                 break;
@@ -188,9 +154,7 @@ export class GameManager {
 
                     if (this.tetrisBoard.checkMove(this.tetrimino, Directions.LEFT)) {
                         this.tetrimino = this.tetrisBoard.moveLeft(this.tetrimino);
-                    } else {
-                        // this.tetrimino = this.tetrisBoard.insertTeriminoO();
-                    }
+                    } 
                 }
 
                 break;
@@ -200,6 +164,45 @@ export class GameManager {
                     this.tetrimino = this.tetrisBoard.rotate(this.tetrimino);
                 }
 
+                break;
+            default:
+                break;
+        }
+    }
+
+    private goDown() {
+        if (this.tetrisBoard.checkMove(this.tetrimino, Directions.DOWN)) {
+            this.tetrimino = this.tetrisBoard.moveDown(this.tetrimino);
+        } else {
+            // this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.Z);
+            this.randomTetrimino();
+            //dodanie nowego tetrimino po braku moźliwości ruchu w dół!!!!!
+        }
+    }
+
+    private randomTetrimino() {
+        let randOfType = Math.floor(Math.random() * (7 - 1 + 1) + 1);
+        switch (randOfType) {
+            case 1:
+                this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.I);
+                break;
+            case 2:
+                this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.T);
+                break;
+            case 3:
+                this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.O);
+                break;
+            case 4:
+                this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.L);
+                break;
+            case 5:
+                this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.J);
+                break;
+            case 6:
+                this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.S);
+                break;
+            case 7:
+                this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.Z);
                 break;
             default:
                 break;
