@@ -1,7 +1,7 @@
 import { PI_2 } from "pixi.js";
 import { ArrayBoard, Field } from "./model/board";
 import { Directions } from "./model/directions";
-import { Tetrimino } from "./model/tetimino";
+import { Tetrimino, firstTeriminos } from "./model/tetimino";
 import { TypeOfTet } from "./model/type_of_tet";
 
 export class TetrisBoard {
@@ -32,33 +32,7 @@ export class TetrisBoard {
         }
     }
 
-    // public setAllFieldsInBoardRandom(): void {
-    //     this.board = [];
-    //     for (let y = 0; y < this.ROWS; y++) {
-    //         for (let x = 0; x < this.COLS; x++) {
-    //             const field: Field = {
-    //                 "x": x,
-    //                 "y": y,
-    //                 "value": ""
-    //             }
-    //             if (Math.random() > 0.5) {
-    //                 field.value = "0";
-    //             } else {
-    //                 field.value = "X";
-    //             }
-    //             this.board.push(field);
-    //         }
-
-    //     }
-    // }
-
-    // public setField(field: number): void {
-    //     this.board.forEach(element => {
-    //         if (element === this.board[field]) {
-    //             element.value = "X";
-    //         }
-    //     })
-    // }
+   
     public setField(field: number, typeOfTet: TypeOfTet): void {
         this.board.forEach(element => {
             if (element === this.board[field]) {
@@ -87,8 +61,6 @@ export class TetrisBoard {
         })
         return sameLine;
     }
-
-
     // Tetrimino „I” – cztery elementy w jednym szeregu
     // Tetrimino „T” – trzy elementy w rzędzie i jeden dołączony do środkowego elementu
     // Tetrimino „O” – cztery elementy połączone w kwadrat
@@ -97,46 +69,21 @@ export class TetrisBoard {
     // Tetrimino „S” – tetrimino „O” po przesunięciu dwóch górnych elementów w prawo
     // Tetrimino „Z” – tetrimino „O” po przesunięciu dwóch górnych elementów w lewo
 
-    
-
     public insertTetrimino(type: TypeOfTet): Tetrimino {
+
+
+        const basicTetrimines:firstTeriminos = require("./model/first_tetriminos.json");
+        console.log(basicTetrimines);
         let tetrimino: Tetrimino = {
             type,
             fields: []
         }
-        switch (type) {
-            case TypeOfTet.I:
-                tetrimino.fields = [4, 14, 24, 34];
-                break;
-
-            case TypeOfTet.T:
-                tetrimino.fields = [4, 5, 6, 15];
-                break;
-
-            case TypeOfTet.O:
-                tetrimino.fields = [4, 5, 14, 15];
-                break;
-
-            case TypeOfTet.L:
-                tetrimino.fields = [4, 14, 24, 25];
-                break;
-
-            case TypeOfTet.J:
-                tetrimino.fields = [5, 15, 25, 24];
-                break;
-
-            case TypeOfTet.S:
-                tetrimino.fields = [5, 6, 14, 15];
-                break;
-
-            case TypeOfTet.Z:
-                tetrimino.fields = [4, 5, 15, 16];
-                break;
-
-            default:
-                tetrimino.fields = [4, 5, 14, 15];
-                break;
-        }
+        basicTetrimines.forEach(basic =>{
+            if (basic.type == type) {
+                tetrimino.fields = basic.fields;
+            }
+        })
+      
         tetrimino.fields.forEach(field => {
             this.setField(field, tetrimino.type);
         })

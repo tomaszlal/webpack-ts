@@ -7,11 +7,12 @@
     "build": "webpack",
     "serve": "webpack-dev-server",
     "test": "",
-    "serve2" : "webpack serve --hot --host 0.0.0.0 --env=dev --mode=development"
+    "serve2": "webpack serve --hot --host 0.0.0.0 --env=dev --mode=development"
   },
   "author": "Lalewicz Tomasz",
   "license": "ISC",
   "devDependencies": {
+    "json-loader": "^0.5.7",
     "pixi.js": "^5.3.7",
     "ts-loader": "^9.4.4",
     "typescript": "^5.1.6",

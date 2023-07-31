@@ -3,20 +3,12 @@ import { TetrisBoard } from "./tetrisBoard";
 import { Tetrimino } from "./model/tetimino";
 import { Directions } from "./model/directions";
 import { TypeOfTet } from "./model/type_of_tet";
+import { TypeOfKey } from "./model/type_of_key";
 
 export class GameManager {
     private app: PIXI.Application;
-    // public tetrisBlock1:PIXI.Sprite = new PIXI.Sprite();
-    // public tetrisBlock2:PIXI.Sprite = new PIXI.Sprite();
-    // public loaderPixi:PIXI.Loader = new PIXI.Loader();
-    // public sprites: Array<PIXI.Sprite> = [];
-    // public tetContainer: PIXI.Container = new PIXI.Container();
     public boardContainer: PIXI.Container = new PIXI.Container();
-    
-
-    // public xField: Array<string> = [];
-    // public yLine: Array<Array<string>> = [];
-
+    public listOfTypeOfTet: Array<TypeOfTet> = [];
     private tetrisBoard: TetrisBoard;
     public tetrimino: Tetrimino = {
         type: TypeOfTet.I,
@@ -42,62 +34,34 @@ export class GameManager {
             });
         });
 
+        Object.values(TypeOfTet).forEach(letter => {
+            this.listOfTypeOfTet.push(letter);
+        });
+
         this.init();
     }
 
     public addTicker(): void {
-        const texTetI = PIXI.Texture.from("/assets/images/tet_I.png");
-        const texTetT = PIXI.Texture.from("/assets/images/tet_T.png");
-        const texTetO = PIXI.Texture.from("/assets/images/tet_O.png");
-        const texTetL = PIXI.Texture.from("/assets/images/tet_L.png");
-        const texTetJ = PIXI.Texture.from("/assets/images/tet_J.png");
-        const texTetS = PIXI.Texture.from("/assets/images/tet_S.png");
-        const texTetZ = PIXI.Texture.from("/assets/images/tet_Z.png");
+        let tetTextures: Map<TypeOfTet, PIXI.Texture> = new Map<TypeOfTet, PIXI.Texture>();
+        this.listOfTypeOfTet.forEach(typeOfTet => {
+            tetTextures.set(typeOfTet, PIXI.Texture.from("/assets/images/tet_" + typeOfTet + ".png"));
+        })
+        console.log(tetTextures.get(TypeOfTet.L));
         const textureEmptyBlock = PIXI.Texture.from("/assets/images/tet_empty.png");
         this.app.ticker.add((delta) => {
             let i = 0;
-            this.boardContainer.children.forEach((element) => {
-                switch (this.tetrisBoard.getBoard()[i].value) {
-                    case "I":
-                        (element as PIXI.Sprite).texture = texTetI;
-                        break;
-                    case "T":
-                        (element as PIXI.Sprite).texture = texTetT;
-                        break;
-                    case "O":
-                        (element as PIXI.Sprite).texture = texTetO;
-                        break;
-                    case "L":
-                        (element as PIXI.Sprite).texture = texTetL;
-                        break;
-                    case "J":
-                        (element as PIXI.Sprite).texture = texTetJ;
-                        break;
-                    case "S":
-                        (element as PIXI.Sprite).texture = texTetS;
-                        break;
-                    case "Z":
-                        (element as PIXI.Sprite).texture = texTetZ;
-                        break;
-                    default:
-                        (element as PIXI.Sprite).texture = textureEmptyBlock;
-                        break;
+            (this.boardContainer.children as PIXI.Sprite[]).forEach((element) => {
+                if (!tetTextures.has(this.tetrisBoard.getBoard()[i].value as TypeOfTet)) {
+                    element.texture = textureEmptyBlock;
+                } else {
+                    element.texture = tetTextures.get((this.tetrisBoard.getBoard()[i].value as TypeOfTet)) as PIXI.Texture;
                 }
                 i++;
             });
-
         });
     }
 
     public init() {
-        // this.tetrisBoard.setAllFieldsInBoardRandom();
-        // console.log(this.tetrisBoard.getBoard());
-        // console.log(this.tetrisBoard.moveDown(this.tetrimino));
-
-        // this.tetrisBoard.setField(85);
-        // this.tetrisBoard.setField(65);
-
-        //init container - board
         this.boardContainer.width = this.tetrisBoard.COLS * 24;
         this.boardContainer.height = this.tetrisBoard.COLS * 24;
         // this.boardContainer.pivot.set(this.boardContainer.width/2, this.boardContainer.height/2);
@@ -107,15 +71,8 @@ export class GameManager {
             this.app.screen.height / 2 - (this.tetrisBoard.ROWS * 24) / 2;
         console.log(this.boardContainer);
         this.app.stage.addChild(this.boardContainer);
-
         this.generateViewBoard();
-
-
-        // this.tetrimino = this.tetrisBoard.insertTeriminoI();
-        // this.tetrimino = this.tetrisBoard.insertTetriminoT();
         this.randomTetrimino();
-
-
     }
 
     private generateViewBoard() {
@@ -130,83 +87,42 @@ export class GameManager {
         });
     }
 
-    onKey(e: KeyboardEvent) {
+    public onKey(e: KeyboardEvent) {
         console.log(e);
         switch (e.key) {
-            case "ArrowDown":
-                {
-                    // console.log(this.tetrisBoard.checkMove(this.tetrimino, Directions.DOWN));
-                    this.goDown();
-                }
-
+            case TypeOfKey.DOWN:
+                     this.goDown();
                 break;
-            case "ArrowRight":
-                {
+            case TypeOfKey.RIGHT:
                     if (this.tetrisBoard.checkMove(this.tetrimino, Directions.RIGHT)) {
                         this.tetrimino = this.tetrisBoard.moveRight(this.tetrimino);
-                    } 
-                }
-
+                    }
                 break;
-            case "ArrowLeft":
-                {
-                    console.log(this.tetrisBoard.checkMove(this.tetrimino, Directions.LEFT));
-
+            case TypeOfKey.LEFT:
+                    // console.log(this.tetrisBoard.checkMove(this.tetrimino, Directions.LEFT));
                     if (this.tetrisBoard.checkMove(this.tetrimino, Directions.LEFT)) {
                         this.tetrimino = this.tetrisBoard.moveLeft(this.tetrimino);
-                    } 
-                }
-
+                    }
                 break;
-            case "ArrowUp":
-                {
-
+            case TypeOfKey.UP:
                     this.tetrimino = this.tetrisBoard.rotate(this.tetrimino);
-                }
-
                 break;
             default:
                 break;
         }
     }
 
-    private goDown() {
+    public goDown() {
         if (this.tetrisBoard.checkMove(this.tetrimino, Directions.DOWN)) {
             this.tetrimino = this.tetrisBoard.moveDown(this.tetrimino);
         } else {
-            // this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.Z);
             this.randomTetrimino();
             //dodanie nowego tetrimino po braku moźliwości ruchu w dół!!!!!
         }
     }
 
-    private randomTetrimino() {
-        let randOfType = Math.floor(Math.random() * (7 - 1 + 1) + 1);
-        switch (randOfType) {
-            case 1:
-                this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.I);
-                break;
-            case 2:
-                this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.T);
-                break;
-            case 3:
-                this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.O);
-                break;
-            case 4:
-                this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.L);
-                break;
-            case 5:
-                this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.J);
-                break;
-            case 6:
-                this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.S);
-                break;
-            case 7:
-                this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.Z);
-                break;
-            default:
-                break;
-        }
+    public randomTetrimino() {
+        this.tetrimino = this.tetrisBoard.insertTetrimino(this.listOfTypeOfTet[Math.floor(Math.random() * this.listOfTypeOfTet.length)]);
     }
 }
 
