@@ -2,14 +2,18 @@ import * as PIXI from "pixi.js";
 import { TetrisBoard } from "./tetrisBoard";
 import { Tetrimino } from "./model/tetimino";
 import { Directions } from "./model/directions";
-import { TypeOfTet } from "./model/type_of_tet";
-import { TypeOfKey } from "./model/type_of_key";
+import { TypeOfTet } from "./model/TypeOfTet";
+import { TypeOfKey } from "./model/TypeOfKey";
+import { TetriminoRun } from "./tetriminoRun";
+import { GameStatus } from "./gameStatus";
 
 export class GameManager {
     private app: PIXI.Application;
     public boardContainer: PIXI.Container = new PIXI.Container();
     public listOfTypeOfTet: Array<TypeOfTet> = [];
     private tetrisBoard: TetrisBoard;
+    public tetriminoRun: TetriminoRun;
+    public gameStatus: GameStatus;
     public tetrimino: Tetrimino = {
         type: TypeOfTet.I,
         fields: [],
@@ -27,6 +31,10 @@ export class GameManager {
         });
         document.body.appendChild(this.app.view);
         this.tetrisBoard = new TetrisBoard();
+        this.tetriminoRun = new TetriminoRun(this.tetrisBoard);
+        this.gameStatus = new GameStatus(this);
+
+
         // ['keydown' as const, 'keyup' as const]
         ["keydown" as const].forEach((eventName) => {
             document.addEventListener(eventName, (e) => {
@@ -44,17 +52,18 @@ export class GameManager {
     public addTicker(): void {
         let tetTextures: Map<TypeOfTet, PIXI.Texture> = new Map<TypeOfTet, PIXI.Texture>();
         this.listOfTypeOfTet.forEach(typeOfTet => {
-            tetTextures.set(typeOfTet, PIXI.Texture.from("/assets/images/tet_" + typeOfTet + ".png"));
+            tetTextures.set(typeOfTet, PIXI.Texture.from(`/assets/images/tet_${typeOfTet}.png`));
         })
         console.log(tetTextures.get(TypeOfTet.L));
         const textureEmptyBlock = PIXI.Texture.from("/assets/images/tet_empty.png");
+        const tetBoard = this.tetrisBoard.getBoard();
         this.app.ticker.add((delta) => {
             let i = 0;
             (this.boardContainer.children as PIXI.Sprite[]).forEach((element) => {
-                if (!tetTextures.has(this.tetrisBoard.getBoard()[i].value as TypeOfTet)) {
+                if (!tetTextures.has(tetBoard[i].value as TypeOfTet)) {
                     element.texture = textureEmptyBlock;
                 } else {
-                    element.texture = tetTextures.get((this.tetrisBoard.getBoard()[i].value as TypeOfTet)) as PIXI.Texture;
+                    element.texture = tetTextures.get((tetBoard[i].value as TypeOfTet)) as PIXI.Texture;
                 }
                 i++;
             });
@@ -73,6 +82,8 @@ export class GameManager {
         this.app.stage.addChild(this.boardContainer);
         this.generateViewBoard();
         this.randomTetrimino();
+        this.gameStatus.startInterval();
+        // this.gameStatus.stopInterval();
     }
 
     private generateViewBoard() {
@@ -91,21 +102,16 @@ export class GameManager {
         console.log(e);
         switch (e.key) {
             case TypeOfKey.DOWN:
-                     this.goDown();
+                this.goDown();
                 break;
             case TypeOfKey.RIGHT:
-                    if (this.tetrisBoard.checkMove(this.tetrimino, Directions.RIGHT)) {
-                        this.tetrimino = this.tetrisBoard.moveRight(this.tetrimino);
-                    }
+                this.tetrimino = this.tetriminoRun.swipRightWithCheck(this.tetrimino);
                 break;
             case TypeOfKey.LEFT:
-                    // console.log(this.tetrisBoard.checkMove(this.tetrimino, Directions.LEFT));
-                    if (this.tetrisBoard.checkMove(this.tetrimino, Directions.LEFT)) {
-                        this.tetrimino = this.tetrisBoard.moveLeft(this.tetrimino);
-                    }
+                this.tetrimino = this.tetriminoRun.swipLeftWithCheck(this.tetrimino);
                 break;
             case TypeOfKey.UP:
-                    this.tetrimino = this.tetrisBoard.rotate(this.tetrimino);
+                this.tetrimino = this.tetriminoRun.rotate(this.tetrimino);
                 break;
             default:
                 break;
@@ -113,8 +119,8 @@ export class GameManager {
     }
 
     public goDown() {
-        if (this.tetrisBoard.checkMove(this.tetrimino, Directions.DOWN)) {
-            this.tetrimino = this.tetrisBoard.moveDown(this.tetrimino);
+        if (this.tetriminoRun.checkMove(this.tetrimino, Directions.DOWN)) {
+            this.tetrimino = this.tetriminoRun.swipDown(this.tetrimino);
         } else {
             this.randomTetrimino();
             //dodanie nowego tetrimino po braku moźliwości ruchu w dół!!!!!

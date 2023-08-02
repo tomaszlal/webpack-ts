@@ -1,4 +1,4 @@
-import { GameManager } from "./pixi_env";
+import { GameManager } from "./GameManager";
 
 window.onload = () => {
     const newGame = new GameManager();

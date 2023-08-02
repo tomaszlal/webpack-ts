@@ -1,4 +1,4 @@
-import { TypeOfTet } from "./type_of_tet"
+import { TypeOfTet } from "./TypeOfTet"
 
 export type firstTeriminos = Tetrimino[]
 
