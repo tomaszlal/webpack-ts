@@ -82,7 +82,7 @@ export class GameManager {
         this.app.stage.addChild(this.boardContainer);
         this.generateViewBoard();
         this.randomTetrimino();
-        this.gameStatus.startInterval();
+        this.gameStatus.startTimer();
         // this.gameStatus.stopInterval();
     }
 
@@ -124,6 +124,12 @@ export class GameManager {
         } else {
             this.randomTetrimino();
             //dodanie nowego tetrimino po braku moźliwości ruchu w dół!!!!!
+            
+            // test
+            console.log(`linia 21: filled ${ this.tetrisBoard.checkLine(21)}`);
+            
+           
+            // this.gameStatus.changeInterval(this.gameStatus.getTimeInterval()-100);
         }
     }
 

@@ -3,57 +3,58 @@ import { TetriminoRun } from "./tetriminoRun";
 import { TetrisBoard } from "./tetrisBoard";
 
 export class GameStatus {
-    private score:number = 0;
-    private timeInterval:number = 2000;
-    private interval = setInterval(()=>{},0);
-    // public tetriminoRun: TetriminoRun;
-    // public tetrisBoard: TetrisBoard;
-    public gameManager:GameManager;
+    private score: number = 0;
+    private timeInterval: number = 2000;
+    private timer = setInterval(() => { }, 0);
+    private timerOn = false;
+    public gameManager: GameManager;
 
-    constructor(gameManager:GameManager) {
-
-        
+    constructor(gameManager: GameManager) {
         this.gameManager = gameManager;
 
-        console.log(this.interval);
-        
-        // this.tetriminoRun = tetriminoRun;
-        // this.tetrisBoard = tetrisBoard;
-        // tetrisBoard: TetrisBoard,tetriminoRun: TetriminoRun
-        
+        console.log(this.timer);
 
-        // setInterval(() = > this.printMsg(), 2000);
-        // clearInterval(myInterval);
+
     }
 
-    
-    public startInterval():void{
-        
-            this.interval = setInterval(() => {
-                console.log(`Interval = ${this.timeInterval}`);                
+
+    public startTimer(): void {
+        if (!this.timerOn) {
+            this.timer = setInterval(() => {
+                console.log(`Interval = ${this.timeInterval}`);
                 this.gameManager.goDown();
             }, this.timeInterval);
-    
-            
-
-    }
-
-   
-    public stopInterval():void{
-        console.log(`Stop interval = ${this.interval}`);
-        clearInterval(this.interval);
-        
+            this.timerOn = true;
+        }
     }
 
 
-
-
-
-    public setScore(score:number) :void{
-        this.score  = score;
+    public stopTimer(): void {
+        if (this.timerOn) {
+            console.log(`Stop interval = ${this.timer}`);
+            clearInterval(this.timer);
+            this.timerOn = false;
+        }
     }
 
-    public getScore():number {
+    public changeInterval(time: number): void {
+        this.stopTimer();
+        this.timeInterval = time;
+        this.startTimer();
+
+    }
+
+    public setScore(score: number): void {
+        this.score = score;
+    }
+
+    public getScore(): number {
         return this.score;
     }
+
+    public getTimeInterval(): number {
+        return this.timeInterval;
+    }
+
+    
 }

@@ -86,6 +86,16 @@ export class TetrisBoard {
         return tetrimino;
     }
 
+   
+    public checkLine(line: number): boolean {
+        let isLineFilled = true;
+        for (let i = line *this.COLS; i < line * this.COLS + this.COLS; i++) {
+            isLineFilled = isLineFilled &&  !this.isEmpty(i);
+            console.log(`field :${i} is empty: ${this.isEmpty(i)}`);
+         }
+        return isLineFilled;
+    }
+
     
 }
 
