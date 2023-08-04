@@ -1,0 +1,17 @@
+{
+    "align": "right",
+    "dropShadow": true,
+    "dropShadowBlur": 4,
+    "dropShadowColor": "#4a4545",
+    "dropShadowDistance": 11,
+    "fill": [
+        "#24f569",
+        "#13dcf6"
+    ],
+    "fontFamily": "Courier New",
+    "fontSize": 34,
+    "fontWeight": 800,
+    "letterSpacing": 3,
+    "miterLimit": 11,
+    "strokeThickness": 2
+}

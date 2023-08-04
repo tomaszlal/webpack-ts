@@ -56,5 +56,8 @@ export class GameStatus {
         return this.timeInterval;
     }
 
+    public addOnePoint(): void {
+        this.score += 1;
+    }
     
 }

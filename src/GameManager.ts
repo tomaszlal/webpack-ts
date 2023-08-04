@@ -10,10 +10,12 @@ import { GameStatus } from "./gameStatus";
 export class GameManager {
     private app: PIXI.Application;
     public boardContainer: PIXI.Container = new PIXI.Container();
+    public infoContainer: PIXI.Container = new PIXI.Container();
     public listOfTypeOfTet: Array<TypeOfTet> = [];
     private tetrisBoard: TetrisBoard;
     public tetriminoRun: TetriminoRun;
     public gameStatus: GameStatus;
+    public scoreText: PIXI.Text = new PIXI.Text("Score : 254",require('./fonts/FontDigits.json'));
     public tetrimino: Tetrimino = {
         type: TypeOfTet.I,
         fields: [],
@@ -25,8 +27,8 @@ export class GameManager {
                 PIXI: PIXI,
             });
         this.app = new PIXI.Application({
-            width: 1000,
-            height: 600,
+            width: 600,
+            height: 700,
             backgroundColor: 0xbbbbbb,
         });
         document.body.appendChild(this.app.view);
@@ -67,15 +69,27 @@ export class GameManager {
                 }
                 i++;
             });
+            this.scoreText.text = `Score : ${this.gameStatus.getScore()}`;
         });
     }
 
     public init() {
+        //info container
+        this.infoContainer.width = this.tetrisBoard.COLS * 24;
+        this.infoContainer.height = this.tetrisBoard.COLS * 24;
+        this.infoContainer.addChild(this.scoreText);
+        this.infoContainer.x =
+            this.app.screen.width / 4  - (this.tetrisBoard.COLS * 24) / 2;
+        this.infoContainer.y =
+            this.app.screen.height / 2 - (this.tetrisBoard.ROWS * 24) / 2;
+        this.app.stage.addChild(this.infoContainer);
+        // this.infoContainer.
+        // board container
         this.boardContainer.width = this.tetrisBoard.COLS * 24;
         this.boardContainer.height = this.tetrisBoard.COLS * 24;
         // this.boardContainer.pivot.set(this.boardContainer.width/2, this.boardContainer.height/2);
         this.boardContainer.x =
-            this.app.screen.width / 2 - (this.tetrisBoard.COLS * 24) / 2;
+            this.app.screen.width / 4 + this.app.screen.width / 2 - (this.tetrisBoard.COLS * 24) / 2;
         this.boardContainer.y =
             this.app.screen.height / 2 - (this.tetrisBoard.ROWS * 24) / 2;
         console.log(this.boardContainer);
@@ -103,6 +117,7 @@ export class GameManager {
         switch (e.key) {
             case TypeOfKey.DOWN:
                 this.goDown();
+                this.gameStatus.addOnePoint();
                 break;
             case TypeOfKey.RIGHT:
                 this.tetrimino = this.tetriminoRun.swipRightWithCheck(this.tetrimino);
@@ -124,11 +139,12 @@ export class GameManager {
         } else {
             this.randomTetrimino();
             //dodanie nowego tetrimino po braku moźliwości ruchu w dół!!!!!
-            
+
             // test
-            console.log(`linia 21: filled ${ this.tetrisBoard.checkLine(21)}`);
-            
+            console.log(`linia 21: filled ${this.tetrisBoard.checkLine(21)}`);
            
+
+
             // this.gameStatus.changeInterval(this.gameStatus.getTimeInterval()-100);
         }
     }
