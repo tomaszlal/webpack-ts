@@ -1,6 +1,6 @@
 import { GameManager } from "./GameManager";
 import { TetriminoRun } from "./tetriminoRun";
-import { TetrisBoard } from "./tetrisBoard";
+import { TetrisBoard } from "./TetrisBoard";
 
 export class GameStatus {
     private score: number = 0;

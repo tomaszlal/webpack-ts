@@ -1,5 +1,5 @@
 import * as PIXI from "pixi.js";
-import { TetrisBoard } from "./tetrisBoard";
+import { TetrisBoard } from "./TetrisBoard";
 import { Tetrimino } from "./model/tetimino";
 import { Directions } from "./model/directions";
 import { TypeOfTet } from "./model/TypeOfTet";
@@ -12,10 +12,11 @@ export class GameManager {
     public boardContainer: PIXI.Container = new PIXI.Container();
     public infoContainer: PIXI.Container = new PIXI.Container();
     public listOfTypeOfTet: Array<TypeOfTet> = [];
-    private tetrisBoard: TetrisBoard;
+    public tetrisBoard: TetrisBoard;
     public tetriminoRun: TetriminoRun;
     public gameStatus: GameStatus;
-    public scoreText: PIXI.Text = new PIXI.Text("Score : 254",require('./fonts/FontDigits.json'));
+    public oneBlockSize: number = 24;
+    public scoreText: PIXI.Text = new PIXI.Text("Score : 254", require('./fonts/FontDigits.json'));
     public tetrimino: Tetrimino = {
         type: TypeOfTet.I,
         fields: [],
@@ -75,23 +76,23 @@ export class GameManager {
 
     public init() {
         //info container
-        this.infoContainer.width = this.tetrisBoard.COLS * 24;
-        this.infoContainer.height = this.tetrisBoard.COLS * 24;
+        this.infoContainer.width = this.tetrisBoard.COLS * this.oneBlockSize;
+        this.infoContainer.height = this.tetrisBoard.COLS * this.oneBlockSize;
         this.infoContainer.addChild(this.scoreText);
         this.infoContainer.x =
-            this.app.screen.width / 4  - (this.tetrisBoard.COLS * 24) / 2;
+            this.app.screen.width / 4 - (this.tetrisBoard.COLS * this.oneBlockSize) / 2;
         this.infoContainer.y =
-            this.app.screen.height / 2 - (this.tetrisBoard.ROWS * 24) / 2;
+            this.app.screen.height / 2 - (this.tetrisBoard.ROWS * this.oneBlockSize) / 2;
         this.app.stage.addChild(this.infoContainer);
         // this.infoContainer.
         // board container
-        this.boardContainer.width = this.tetrisBoard.COLS * 24;
-        this.boardContainer.height = this.tetrisBoard.COLS * 24;
+        this.boardContainer.width = this.tetrisBoard.COLS * this.oneBlockSize;
+        this.boardContainer.height = this.tetrisBoard.COLS * this.oneBlockSize;
         // this.boardContainer.pivot.set(this.boardContainer.width/2, this.boardContainer.height/2);
         this.boardContainer.x =
-            this.app.screen.width / 4 + this.app.screen.width / 2 - (this.tetrisBoard.COLS * 24) / 2;
+            this.app.screen.width / 4 + this.app.screen.width / 2 - (this.tetrisBoard.COLS * this.oneBlockSize) / 2;
         this.boardContainer.y =
-            this.app.screen.height / 2 - (this.tetrisBoard.ROWS * 24) / 2;
+            this.app.screen.height / 2 - (this.tetrisBoard.ROWS * this.oneBlockSize) / 2;
         console.log(this.boardContainer);
         this.app.stage.addChild(this.boardContainer);
         this.generateViewBoard();
@@ -106,8 +107,8 @@ export class GameManager {
         this.tetrisBoard.getBoard().forEach((field) => {
             let block: PIXI.Sprite = new PIXI.Sprite();
             block = PIXI.Sprite.from(textureEmptyBlock);
-            block.x = field.x * 24;
-            block.y = field.y * 24;
+            block.x = field.x * this.oneBlockSize;
+            block.y = field.y * this.oneBlockSize;
             this.boardContainer.addChild(block);
         });
     }
@@ -142,7 +143,7 @@ export class GameManager {
 
             // test
             console.log(`linia 21: filled ${this.tetrisBoard.checkLine(21)}`);
-           
+
 
 
             // this.gameStatus.changeInterval(this.gameStatus.getTimeInterval()-100);
@@ -150,7 +151,8 @@ export class GameManager {
     }
 
     public randomTetrimino() {
-        this.tetrimino = this.tetrisBoard.insertTetrimino(this.listOfTypeOfTet[Math.floor(Math.random() * this.listOfTypeOfTet.length)]);
+        this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.T);
+        // this.tetrimino = this.tetrisBoard.insertTetrimino(this.listOfTypeOfTet[Math.floor(Math.random() * this.listOfTypeOfTet.length)]);
     }
 }
 
@@ -227,11 +229,11 @@ export class GameManager {
 
 // //create the tetris block from element tet (tetContainer
 // this.tetContainer.width = 96;
-// this.tetContainer.height = 24;
+// this.tetContainer.height = this.oneBlockSize;
 
 // for (let i = 0; i <4 ;i++) {
 //     const element = PIXI.Sprite.from(resources.resources.tet.texture);
-//     element.x = i*24;
+//     element.x = i*this.oneBlockSize;
 //     element.y = 0;
 //     this.tetContainer.addChild(element);
 // }

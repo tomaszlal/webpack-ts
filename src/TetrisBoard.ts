@@ -17,14 +17,10 @@ export class TetrisBoard {
         return this.board;
     }
 
-    public setAllFieldsInBoard(sign: string): void {
+    public setAllFieldsInBoard(value: string): void {
         for (let y = 0; y < this.ROWS; y++) {
             for (let x = 0; x < this.COLS; x++) {
-                const field: Field = {
-                    "x": x,
-                    "y": y,
-                    "value": sign
-                }
+                const field: Field = { x, y,value }
                 this.board.push(field);
             }
         }
@@ -96,6 +92,8 @@ export class TetrisBoard {
         return isLineFilled;
     }
 
+
+  
     
 }
 
