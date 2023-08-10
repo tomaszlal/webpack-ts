@@ -151,8 +151,8 @@ export class GameManager {
     }
 
     public randomTetrimino() {
-        this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.J);
-        // this.tetrimino = this.tetrisBoard.insertTetrimino(this.listOfTypeOfTet[Math.floor(Math.random() * this.listOfTypeOfTet.length)]);
+        // this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.Z);
+        this.tetrimino = this.tetrisBoard.insertTetrimino(this.listOfTypeOfTet[Math.floor(Math.random() * this.listOfTypeOfTet.length)]);
     }
 }
 

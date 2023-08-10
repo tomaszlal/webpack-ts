@@ -233,7 +233,8 @@ export class TetriminoRun {
         const middle = tetrimino.fields[1];
         if (max - min === 30) {   // tetriminoI set vertical alignment
             console.log(min, max, middle);
-            if (this.canRotateVerticalI(middle)) {
+            if (this.canRotateIVertical
+                (middle)) {
                 tetrimino.fields.forEach(field => this.tetrisBoard.clearField(field));
                 for (let i = -1; i < 3; i++) {
                     this.tetrisBoard.setField(middle + i, newTetrimino.type);
@@ -242,7 +243,7 @@ export class TetriminoRun {
                 return newTetrimino;
             }
         } else {
-            if (this.canRotateHorizontalI(middle)) {
+            if (this.canRotateIHorizontal(middle)) {
                 tetrimino.fields.forEach(field => this.tetrisBoard.clearField(field));
                 for (let i = -this.tetrisBoard.COLS; i < 3 * this.tetrisBoard.COLS; i += this.tetrisBoard.COLS) {
                     this.tetrisBoard.setField(middle + i, newTetrimino.type);
@@ -259,23 +260,23 @@ export class TetriminoRun {
         if (max - min === 11) {  //is in position T or reverse
             if (min + 1 === tetrimino.fields[1]) {
                 if (this.canRotateT(min)) {
-                    tetrimino.fields.forEach(field => this.tetrisBoard.clearField(field));
+                    
                     for (let i = 0; i < 3 * this.tetrisBoard.COLS; i += this.tetrisBoard.COLS) {
                         newTetrimino.fields.push(min + i);
                     }
                     newTetrimino.fields.push(max);
-                    newTetrimino.fields.forEach(field => this.tetrisBoard.setField(field, newTetrimino.type));
+                    this.clearOldAndSetNewTetimino(tetrimino, newTetrimino);
                     console.log(newTetrimino.fields);
                     return newTetrimino;
                 }
             } else {
                 if (this.canRotateTInverse(max)) {
-                    tetrimino.fields.forEach(field => this.tetrisBoard.clearField(field));
+                    
                     for (let i = 0; i > (-3 * this.tetrisBoard.COLS); i -= this.tetrisBoard.COLS) {
                         newTetrimino.fields.push(max + i);
                     }
                     newTetrimino.fields.push(min);
-                    newTetrimino.fields.forEach(field => this.tetrisBoard.setField(field, newTetrimino.type));
+                    this.clearOldAndSetNewTetimino(tetrimino, newTetrimino);
                     return newTetrimino;
                 }
 
@@ -288,8 +289,7 @@ export class TetriminoRun {
                         newTetrimino.fields.push(max + i);
                     }
                     newTetrimino.fields.push(tetrimino.fields[2]);
-                    tetrimino.fields.forEach(field => this.tetrisBoard.clearField(field));
-                    newTetrimino.fields.forEach(field => this.tetrisBoard.setField(field, newTetrimino.type));
+                    this.clearOldAndSetNewTetimino(tetrimino, newTetrimino);
                     return newTetrimino;
                 }
             } else {
@@ -298,8 +298,7 @@ export class TetriminoRun {
                         newTetrimino.fields.push(min - i);
                     }
                     newTetrimino.fields.push(tetrimino.fields[1]);
-                    tetrimino.fields.forEach(field => this.tetrisBoard.clearField(field));
-                    newTetrimino.fields.forEach(field => this.tetrisBoard.setField(field, newTetrimino.type));
+                    this.clearOldAndSetNewTetimino(tetrimino, newTetrimino);
                     return newTetrimino;
                 }
             }
@@ -310,15 +309,12 @@ export class TetriminoRun {
     private checkAndRotateTetriminoL(tetrimino: Tetrimino, min: number, max: number, newTetrimino: Tetrimino): Tetrimino {
         if (max - min === 21) {
             if (min + 1 === tetrimino.fields[1]) { //axe shape
-                // min + this.tetrisBoard.COLS  RIGHT
-                // const arrForTestLine = this.getArrForTestLine3FieldsOnRight(min + this.tetrisBoard.COLS);
-                if (this.canRotateLInverse(min)) {
+                 if (this.canRotateLInverse(min)) {
                     for (let i = 0; i < 3; i++) {
                         newTetrimino.fields.push(min + this.tetrisBoard.COLS + i);
                     }
                     newTetrimino.fields.push(min + 2 * this.tetrisBoard.COLS);
-                    tetrimino.fields.forEach(field => this.tetrisBoard.clearField(field));
-                    newTetrimino.fields.forEach(field => this.tetrisBoard.setField(field, newTetrimino.type));
+                    this.clearOldAndSetNewTetimino(tetrimino, newTetrimino);
                     return newTetrimino;
                 }
 
@@ -329,8 +325,7 @@ export class TetriminoRun {
                         newTetrimino.fields.push(max - this.tetrisBoard.COLS - i);
                     }
                     newTetrimino.fields.push(min + 1);
-                    tetrimino.fields.forEach(field => this.tetrisBoard.clearField(field));
-                    newTetrimino.fields.forEach(field => this.tetrisBoard.setField(field, newTetrimino.type));
+                    this.clearOldAndSetNewTetimino(tetrimino, newTetrimino);
                     return newTetrimino;
 
 
@@ -345,8 +340,7 @@ export class TetriminoRun {
                         newTetrimino.fields.push(max + 1 - i * this.tetrisBoard.COLS);
                     }
                     newTetrimino.fields.push(max + 2);
-                    tetrimino.fields.forEach(field => this.tetrisBoard.clearField(field));
-                    newTetrimino.fields.forEach(field => this.tetrisBoard.setField(field, newTetrimino.type));
+                    this.clearOldAndSetNewTetimino(tetrimino, newTetrimino);
                     return newTetrimino;
                 }
 
@@ -358,8 +352,7 @@ export class TetriminoRun {
                         newTetrimino.fields.push(min - 1 + i * this.tetrisBoard.COLS);
                     }
                     newTetrimino.fields.push(min - 2);
-                    tetrimino.fields.forEach(field => this.tetrisBoard.clearField(field));
-                    newTetrimino.fields.forEach(field => this.tetrisBoard.setField(field, newTetrimino.type));
+                    this.clearOldAndSetNewTetimino(tetrimino, newTetrimino);
                     return newTetrimino;
                 }
                 //     }
@@ -373,51 +366,45 @@ export class TetriminoRun {
         if (max - min === 20) { //shape is J or rotate 180
             if (min + this.tetrisBoard.COLS === tetrimino.fields[1]) { //shape J
                 // min + this.tetrisBoard.COLS    LEFT-
-                
+
                 if (this.canRotateJ(min)) {
                     for (let i = 0; i < 3; i++) {
                         newTetrimino.fields.push(min + this.tetrisBoard.COLS - i);
                     }
                     newTetrimino.fields.push(max);
-                    tetrimino.fields.forEach(field => this.tetrisBoard.clearField(field));
-                    newTetrimino.fields.forEach(field => this.tetrisBoard.setField(field, newTetrimino.type));
+                    this.clearOldAndSetNewTetimino(tetrimino, newTetrimino);
                     return newTetrimino;
                 }
 
             } else { //shape rotate 180 J
                 // min + this.tetrisBoard.COLS  RIGHT
-                
+
                 if (this.canRotateJInverse(min)) {
                     for (let i = 0; i < 3; i++) {
                         newTetrimino.fields.push(min + this.tetrisBoard.COLS + i);
                     }
                     newTetrimino.fields.push(min);
-                    tetrimino.fields.forEach(field => this.tetrisBoard.clearField(field));
-                    newTetrimino.fields.forEach(field => this.tetrisBoard.setField(field, newTetrimino.type));
+                    this.clearOldAndSetNewTetimino(tetrimino, newTetrimino);
                     return newTetrimino;
                 }
             }
         } else {
             if (min + 1 === tetrimino.fields[1]) {
-                if (min + 1 + 2 * this.tetrisBoard.COLS < this.tetrisBoard.COLS * this.tetrisBoard.ROWS) {
-                    if (this.tetrisBoard.isEmpty(min + 1 + 2 * this.tetrisBoard.COLS) && this.tetrisBoard.isEmpty(min + 1 + this.tetrisBoard.COLS)) {
-                        for (let i = 0; i < 3; i++) {
-                            newTetrimino.fields.push(min + 1 + i * this.tetrisBoard.COLS);
-                        }
-                        newTetrimino.fields.push(min + 2);
-                        tetrimino.fields.forEach(field => this.tetrisBoard.clearField(field));
-                        newTetrimino.fields.forEach(field => this.tetrisBoard.setField(field, newTetrimino.type));
-                        return newTetrimino;
+                if (this.canRotatJLeft(min)) {
+                    for (let i = 0; i < 3; i++) {
+                        newTetrimino.fields.push(min + 1 + i * this.tetrisBoard.COLS);
                     }
+                    newTetrimino.fields.push(min + 2);
+                    this.clearOldAndSetNewTetimino(tetrimino, newTetrimino);
+                    return newTetrimino;
                 }
             } else {
-                if (this.tetrisBoard.isEmpty(min + 1) && this.tetrisBoard.isEmpty(min + 1 - this.tetrisBoard.COLS)) {
+                if (this.canRotateJRight(min)) {
                     for (let i = 0; i < 3; i++) {
                         newTetrimino.fields.push(max - 1 - i * this.tetrisBoard.COLS);
                     }
                     newTetrimino.fields.push(min + this.tetrisBoard.COLS);
-                    tetrimino.fields.forEach(field => this.tetrisBoard.clearField(field));
-                    newTetrimino.fields.forEach(field => this.tetrisBoard.setField(field, newTetrimino.type));
+                    this.clearOldAndSetNewTetimino(tetrimino, newTetrimino);
                     return newTetrimino;
                 }
             }
@@ -428,63 +415,58 @@ export class TetriminoRun {
 
     private checkAndRotateTetriminoS(tetrimino: Tetrimino, min: number, max: number, newTetrimino: Tetrimino): Tetrimino {
         if (max - min === 10) { //shape S horizontal
-            if (max + this.tetrisBoard.COLS < this.tetrisBoard.COLS * this.tetrisBoard.ROWS) {
-                if (this.tetrisBoard.isEmpty(min - 1) && this.tetrisBoard.isEmpty(max + this.tetrisBoard.COLS)) {
-                    for (let i = 0; i < 2; i++) {
-                        newTetrimino.fields.push(min - 1 + i * this.tetrisBoard.COLS);
-                        newTetrimino.fields.push(max + i * this.tetrisBoard.COLS);
-                    }
-                    tetrimino.fields.forEach(field => this.tetrisBoard.clearField(field));
-                    newTetrimino.fields.forEach(field => this.tetrisBoard.setField(field, newTetrimino.type));
-                    return newTetrimino;
+            if (this.canRotateSHorizontal(min, max)) {
+                for (let i = 0; i < 2; i++) {
+                    newTetrimino.fields.push(min - 1 + i * this.tetrisBoard.COLS);
+                    newTetrimino.fields.push(max + i * this.tetrisBoard.COLS);
                 }
+                this.clearOldAndSetNewTetimino(tetrimino, newTetrimino);
+                return newTetrimino;
             }
-
         } else { //shape S vertical
-            // min + 1    RIGHT
-            let arrForTestLine = this.getArrForTestLine2FieldsOnRight(min + 1);
-            if (this.tetrisBoard.isEmpty(min + 1) && this.tetrisBoard.isEmpty(min + 2) && this.tetrisBoard.areInTheSameLine(arrForTestLine)) {
+            if (this.canRotateSVertical(min)) {
                 for (let i = 0; i < 2; i++) {
                     newTetrimino.fields.push(min + 1 + i);
                     newTetrimino.fields.push(min + this.tetrisBoard.COLS + i);
                 }
-                tetrimino.fields.forEach(field => this.tetrisBoard.clearField(field));
-                newTetrimino.fields.forEach(field => this.tetrisBoard.setField(field, newTetrimino.type));
+                this.clearOldAndSetNewTetimino(tetrimino, newTetrimino);
                 return newTetrimino;
             }
         }
         return tetrimino;
     }
+   
+
     private checkAndRotateTetriminoZ(tetrimino: Tetrimino, min: number, max: number, newTetrimino: Tetrimino): Tetrimino {
         if (max - min === 12) {//shape Z horizontal
-            if (max - 1 + this.tetrisBoard.COLS < this.tetrisBoard.COLS * this.tetrisBoard.ROWS) {
-                if (this.tetrisBoard.isEmpty(min + 2) && this.tetrisBoard.isEmpty(max - 1 + this.tetrisBoard.COLS)) {
-                    for (let i = 0; i < 2; i++) {
-                        newTetrimino.fields.push(min + 2 + i * this.tetrisBoard.COLS);
-                        newTetrimino.fields.push(max - 1 + i * this.tetrisBoard.COLS);
-                    }
-                    tetrimino.fields.forEach(field => this.tetrisBoard.clearField(field));
-                    newTetrimino.fields.forEach(field => this.tetrisBoard.setField(field, newTetrimino.type));
-                    return newTetrimino;
+            if (this.canRotateZHorizontal(min, max)) {
+                for (let i = 0; i < 2; i++) {
+                    newTetrimino.fields.push(min + 2 + i * this.tetrisBoard.COLS);
+                    newTetrimino.fields.push(max - 1 + i * this.tetrisBoard.COLS);
                 }
+                this.clearOldAndSetNewTetimino(tetrimino, newTetrimino);
+                return newTetrimino;
             }
         } else { //shape Z Vertical
             // min - 1   LEFT 2
-            let arrForTestLine = this.getArrForTestLine2FieldsOnLeft(min - 1);
-            if (this.tetrisBoard.isEmpty(min - 1) && this.tetrisBoard.isEmpty(min - 2) && this.tetrisBoard.areInTheSameLine(arrForTestLine)) {
+            // let arrForTestLine = this.getArrForTestLine2FieldsOnLeft(min - 1);
+            if (this.canRotateZVertical(min)) {
                 for (let i = 0; i < 2; i++) {
                     newTetrimino.fields.push(min - 1 - i);
                     newTetrimino.fields.push(max - this.tetrisBoard.COLS + i);
                 }
-                tetrimino.fields.forEach(field => this.tetrisBoard.clearField(field));
-                newTetrimino.fields.forEach(field => this.tetrisBoard.setField(field, newTetrimino.type));
+                this.clearOldAndSetNewTetimino(tetrimino, newTetrimino);
                 return newTetrimino;
             }
         }
         return tetrimino;
     }
+    private clearOldAndSetNewTetimino(tetrimino: Tetrimino, newTetrimino: Tetrimino) {
+        tetrimino.fields.forEach(field => this.tetrisBoard.clearField(field));
+        newTetrimino.fields.forEach(field => this.tetrisBoard.setField(field, newTetrimino.type));
+    }
 
-    private canRotateVerticalI(middle: number): boolean {
+    private canRotateIVertical(middle: number): boolean {
         let canRotate = true;
         const arrForTestLine: Array<number> = this.getArrForTestLine4Fields(middle);
         for (let i = -1; i < 3; i++) {
@@ -501,7 +483,7 @@ export class TetriminoRun {
         return isOnBoard;
     }
 
-    private canRotateHorizontalI(middle: number): boolean {
+    private canRotateIHorizontal(middle: number): boolean {
         let canRotate = this.isRotatedIIsOnBoard(middle);
         if (canRotate) {
             canRotate &&= this.tetrisBoard.isEmpty(middle + this.tetrisBoard.COLS);
@@ -592,6 +574,67 @@ export class TetriminoRun {
         canRotate &&= this.tetrisBoard.areInTheSameLine(arrForTestLine);
         return canRotate;
     }
+
+    private isRotatedJIsOnBoard(min: number): boolean {
+        return min - 1 + 2 * this.tetrisBoard.COLS < this.tetrisBoard.COLS * this.tetrisBoard.ROWS;
+    }
+
+    private canRotatJLeft(min: number): boolean {
+        let canRotate = this.isRotatedJIsOnBoard(min);
+        if (canRotate) {
+            canRotate &&= this.tetrisBoard.isEmpty(min + 1 + 2 * this.tetrisBoard.COLS);
+            canRotate &&= this.tetrisBoard.isEmpty(min + 1 + this.tetrisBoard.COLS);
+        }
+        return canRotate;
+    }
+
+    private canRotateJRight(min: number): boolean {
+        let canRotate = this.tetrisBoard.isEmpty(min + 1);
+        canRotate &&= this.tetrisBoard.isEmpty(min + 1 - this.tetrisBoard.COLS);
+        return canRotate;
+    }
+
+    private isRotetedSIsOnBoard(max: number): boolean {
+        return max + this.tetrisBoard.COLS < this.tetrisBoard.COLS * this.tetrisBoard.ROWS;
+    }
+
+    private canRotateSHorizontal(min: number, max: number): boolean {
+        let canRotate = this.isRotetedSIsOnBoard(max);
+        if (canRotate) {
+            canRotate &&= this.tetrisBoard.isEmpty(min - 1);
+            canRotate &&= this.tetrisBoard.isEmpty(max + this.tetrisBoard.COLS);
+        }
+        return canRotate;
+    }
+
+    private canRotateSVertical(min: number): boolean {
+        let arrForTestLine = this.getArrForTestLine2FieldsOnRight(min + 1);
+        let canRotate = this.tetrisBoard.isEmpty(min + 1);
+        canRotate &&= this.tetrisBoard.isEmpty(min + 2);
+        canRotate &&= this.tetrisBoard.areInTheSameLine(arrForTestLine);
+        return canRotate;
+    }
+
+    private isRotetedZIsOnBoard(max: number): boolean {
+        return max - 1 + this.tetrisBoard.COLS < this.tetrisBoard.COLS * this.tetrisBoard.ROWS;
+    }
+
+    private canRotateZHorizontal(min: number, max: number): boolean {
+        let canRotate = this.isRotetedZIsOnBoard(max);
+        if (canRotate) {
+            canRotate &&= this.tetrisBoard.isEmpty(min + 2);
+            canRotate &&= this.tetrisBoard.isEmpty(max - 1 + this.tetrisBoard.COLS);
+        }
+        return canRotate;
+    }
+
+    private canRotateZVertical(min: number): boolean {
+        let arrForTestLine = this.getArrForTestLine2FieldsOnLeft(min - 1);
+        let canRotate = this.tetrisBoard.isEmpty(min - 1);
+        canRotate &&= this.tetrisBoard.isEmpty(min - 2);
+        canRotate &&= this.tetrisBoard.areInTheSameLine(arrForTestLine);
+        return canRotate;
+    }
+
+
 }
-
-

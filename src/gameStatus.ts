@@ -11,10 +11,7 @@ export class GameStatus {
 
     constructor(gameManager: GameManager) {
         this.gameManager = gameManager;
-
         console.log(this.timer);
-
-
     }
 
 
