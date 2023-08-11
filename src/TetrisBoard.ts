@@ -10,14 +10,14 @@ export class TetrisBoard {
 
 
     constructor() {
-        this.setAllFieldsInBoard("0");
+        this.setAllFieldsInBoard(TypeOfTet.EMPTY);
     }
 
     public getBoard(): ArrayBoard {
         return this.board;
     }
 
-    public setAllFieldsInBoard(value: string): void {
+    public setAllFieldsInBoard(value: TypeOfTet): void {
         for (let y = 0; y < this.ROWS; y++) {
             for (let x = 0; x < this.COLS; x++) {
                 const field: Field = { x, y,value }
@@ -35,16 +35,20 @@ export class TetrisBoard {
         })
     }
 
+    public getField(field: number): TypeOfTet {
+        return this.board[field].value;
+    }
+
     public clearField(field: number): void {
         this.board.forEach(element => {
             if (element === this.board[field]) {
-                element.value = "0";
+                element.value = TypeOfTet.EMPTY;
             }
         })
     }
 
     public isEmpty(field: number): boolean {
-        return this.board[field].value === "0";
+        return this.board[field].value === TypeOfTet.EMPTY;
     }
 
     public areInTheSameLine(fields: Array<number>): boolean {
@@ -87,12 +91,40 @@ export class TetrisBoard {
         let isLineFilled = true;
         for (let i = line *this.COLS; i < line * this.COLS + this.COLS; i++) {
             isLineFilled = isLineFilled &&  !this.isEmpty(i);
-            console.log(`field :${i} is empty: ${this.isEmpty(i)}`);
+            // console.log(`field :${i} is empty: ${this.isEmpty(i)}`);
          }
         return isLineFilled;
     }
 
+    public checkAllLines():Array<number> {
+        const lines: Array<number> = [];
+        for (let i = this.ROWS - 1; i > 1; i--) {
+            if (this.checkLine(i)) lines.push(i);           
+        }
+        return lines;
+    }
 
+    public removeLines(lines:Array<number>): void {
+        
+    }
+
+    public clearLine(line:number): void {
+        for (let i = line *this.COLS;i < line * this.COLS + this.COLS; i++){
+            this.clearField(i);
+        }
+    }
+
+    public moveLinesDown(line:number): void {
+        console.log(`line ${line} moved`);
+
+
+        for (let l = line; l > 1; l--){
+            for (let j = l * this.COLS; j < l * this.COLS + this.COLS; j++){
+                debugger;
+                this.setField(j,this.getField(j-this.COLS));
+            }
+        }
+    }
   
     
 }

@@ -5,5 +5,6 @@ export enum TypeOfTet{
     L = "L",
     J = "J",
     S = "S",
-    Z = "Z"
+    Z = "Z",
+    EMPTY = "0"
 }

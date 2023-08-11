@@ -1,193 +1,12 @@
-import { TypeOfTet } from "./model/TypeOfTet";
-import { Directions } from "./model/directions";
-import { Tetrimino } from "./model/tetimino";
 import { TetrisBoard } from "./TetrisBoard";
+import { Tetrimino } from "./model/tetimino";
 
-export class TetriminoRun {
-    public tetrisBoard: TetrisBoard;
+export class TetriminoRotate {
 
-    constructor(tetrisBoard: TetrisBoard) {
-        this.tetrisBoard = tetrisBoard;
+    constructor(public tetrisBoard:TetrisBoard){
+        
     }
 
-    public swipLeftWithCheck(tetrimino: Tetrimino): Tetrimino {
-        if (this.checkMove(tetrimino, Directions.LEFT)) {
-            const newTetrimino: Tetrimino = this.getNewTempTetrimino(tetrimino);
-            tetrimino.fields.forEach(field => {
-                this.tetrisBoard.clearField(field);
-                newTetrimino.fields.push(field - 1);
-            });
-            newTetrimino.fields.forEach(field => {
-                this.tetrisBoard.setField(field, newTetrimino.type);
-            });
-            return newTetrimino;
-        }
-        return tetrimino;
-    }
-
-    public swipRightWithCheck(tetrimino: Tetrimino): Tetrimino {
-        if (this.checkMove(tetrimino, Directions.RIGHT)) {
-            const newTetrimino: Tetrimino = this.getNewTempTetrimino(tetrimino);
-            tetrimino.fields.forEach(field => {
-                this.tetrisBoard.clearField(field);
-                newTetrimino.fields.push(field + 1);
-            });
-            newTetrimino.fields.forEach(field => {
-                this.tetrisBoard.setField(field, newTetrimino.type);
-            });
-            return newTetrimino;
-        }
-        return tetrimino;
-    }
-
-    private getNewTempTetrimino(tetrimino: Tetrimino): Tetrimino {
-        return {
-            type: tetrimino.type,
-            fields: []
-        };
-    }
-
-    public swipDown(tetrimino: Tetrimino): Tetrimino {
-        const newTetrimino: Tetrimino = this.getNewTempTetrimino(tetrimino);
-        tetrimino.fields.forEach(field => {
-            this.tetrisBoard.clearField(field);
-            newTetrimino.fields.push(field + this.tetrisBoard.COLS);
-        });
-        newTetrimino.fields.forEach(field => {
-            this.tetrisBoard.setField(field, newTetrimino.type);
-        });
-        return newTetrimino;
-    }
-
-    public checkMove(tetrimino: Tetrimino, direction: Directions): boolean {    //direction:  "R" or "L" or "D"
-        let isMovePossible = false;
-        switch (direction) {
-            case Directions.DOWN: {
-                isMovePossible = this.isMovePosiibleDown(tetrimino);
-            }
-
-                break;
-            case Directions.RIGHT: {
-                isMovePossible = this.isMovePossibleRight(tetrimino);
-            }
-                break;
-            case Directions.LEFT: {
-                isMovePossible = this.isMovePossibleLeft(tetrimino);
-            }
-                break;
-            default:
-                break;
-        }
-        return isMovePossible;
-
-    }
-
-    private isMovePossibleLeft(tetrimino: Tetrimino) {
-        let isMovePossible = true;
-        let checkList: Array<boolean> = [];
-        tetrimino.fields.forEach(field => {
-            if (!tetrimino.fields.includes(field - 1)) {
-                if (field % this.tetrisBoard.COLS > 0) {
-                    checkList.push(true);
-                    if (this.tetrisBoard.isEmpty(field - 1)) {
-                        checkList.push(true);
-                    } else {
-                        checkList.push(false);
-                    }
-                } else {
-                    checkList.push(false);
-                }
-            }
-        });
-        checkList.forEach(check => {
-            isMovePossible = isMovePossible && check;
-        });
-        return isMovePossible;
-    }
-
-    private isMovePossibleRight(tetrimino: Tetrimino) {
-        let isMovePossible = true;
-        let checkList: Array<boolean> = [];
-        tetrimino.fields.forEach(field => {
-            if (!tetrimino.fields.includes(field + 1)) {
-                if (field % this.tetrisBoard.COLS < this.tetrisBoard.COLS - 1) {
-                    checkList.push(true);
-                    if (this.tetrisBoard.isEmpty(field + 1)) {
-                        checkList.push(true);
-                    } else {
-                        checkList.push(false);
-                    }
-                } else {
-                    checkList.push(false);
-                }
-            }
-        });
-        checkList.forEach(check => {
-            isMovePossible = isMovePossible && check;
-        });
-        return isMovePossible;
-    }
-
-    private isMovePosiibleDown(tetrimino: Tetrimino) {
-        let isMovePossible = true;
-        let checkList: Array<boolean> = [];
-        tetrimino.fields.forEach(field => {
-            if (!tetrimino.fields.includes(field + this.tetrisBoard.COLS)) { //jeżeli tetermino nie zawiera kolejnych pol po dodaniu szerokosci planszy 
-                console.log(field);
-                if (field + this.tetrisBoard.COLS < this.tetrisBoard.COLS * this.tetrisBoard.ROWS) { //jeżeli pole +10(szerokosc planszy) nie wychodzi poza wielkosc planszy
-                    checkList.push(true);
-                    if (this.tetrisBoard.isEmpty(field + this.tetrisBoard.COLS)) { //czy poniżej jednego z najniższego pola planszy znajduje się 
-                        checkList.push(true);
-                    } else {
-                        checkList.push(false);
-                    }
-                } else {
-                    checkList.push(false);
-                }
-            }
-        });
-        checkList.forEach(check => {
-            isMovePossible = isMovePossible && check;
-        });
-        return isMovePossible;
-    }
-
-    public rotate(tetrimino: Tetrimino): Tetrimino {
-        const newTetrimino: Tetrimino = this.getNewTempTetrimino(tetrimino);
-        const min = Math.min(...tetrimino.fields);
-        const max = Math.max(...tetrimino.fields);
-        tetrimino.fields = tetrimino.fields.sort((a, b) => a - b);
-        let answer: Tetrimino = { type: tetrimino.type, fields: [] }
-        switch (tetrimino.type) {
-            case TypeOfTet.I:
-                answer = this.checkAndRotateTetriminoI(tetrimino, min, max, newTetrimino);
-                if (answer !== tetrimino) return answer;
-                break;
-            case TypeOfTet.T:
-                answer = this.checkAndRotateTetriminoT(tetrimino, min, max, newTetrimino);
-                if (answer !== tetrimino) return answer;
-                break;
-            case TypeOfTet.L:
-                answer = this.checkAndRotateTetriminoL(tetrimino, min, max, newTetrimino);
-                if (answer !== tetrimino) return answer;
-                break;
-            case TypeOfTet.J:
-                answer = this.checkAndRotateTetriminoJ(tetrimino, min, max, newTetrimino);
-                if (answer !== tetrimino) return answer;
-                break;
-            case TypeOfTet.S:
-                answer = this.checkAndRotateTetriminoS(tetrimino, min, max, newTetrimino);
-                if (answer !== tetrimino) return answer;
-                break;
-            case TypeOfTet.Z:
-                answer = this.checkAndRotateTetriminoZ(tetrimino, min, max, newTetrimino);
-                if (answer !== tetrimino) return answer;
-                break;
-
-        }
-
-        return tetrimino;
-    }
 
     private getArrForTestLine4Fields(field: number) {
         let arrForTestLine: Array<number> = [];
@@ -229,7 +48,7 @@ export class TetriminoRun {
         return arrForTestLine;
     }
 
-    private checkAndRotateTetriminoI(tetrimino: Tetrimino, min: number, max: number, newTetrimino: Tetrimino): Tetrimino {
+    public checkAndRotateTetriminoI(tetrimino: Tetrimino, min: number, max: number, newTetrimino: Tetrimino): Tetrimino {
         const middle = tetrimino.fields[1];
         if (max - min === 30) {   // tetriminoI set vertical alignment
             console.log(min, max, middle);
@@ -255,7 +74,7 @@ export class TetriminoRun {
         return tetrimino;
 
     }
-    private checkAndRotateTetriminoT(tetrimino: Tetrimino, min: number, max: number, newTetrimino: Tetrimino): Tetrimino {
+    public checkAndRotateTetriminoT(tetrimino: Tetrimino, min: number, max: number, newTetrimino: Tetrimino): Tetrimino {
 
         if (max - min === 11) {  //is in position T or reverse
             if (min + 1 === tetrimino.fields[1]) {
@@ -306,7 +125,7 @@ export class TetriminoRun {
         return tetrimino;
     }
 
-    private checkAndRotateTetriminoL(tetrimino: Tetrimino, min: number, max: number, newTetrimino: Tetrimino): Tetrimino {
+    public checkAndRotateTetriminoL(tetrimino: Tetrimino, min: number, max: number, newTetrimino: Tetrimino): Tetrimino {
         if (max - min === 21) {
             if (min + 1 === tetrimino.fields[1]) { //axe shape
                  if (this.canRotateLInverse(min)) {
@@ -362,7 +181,7 @@ export class TetriminoRun {
         return tetrimino;
     }
 
-    private checkAndRotateTetriminoJ(tetrimino: Tetrimino, min: number, max: number, newTetrimino: Tetrimino): Tetrimino {
+    public checkAndRotateTetriminoJ(tetrimino: Tetrimino, min: number, max: number, newTetrimino: Tetrimino): Tetrimino {
         if (max - min === 20) { //shape is J or rotate 180
             if (min + this.tetrisBoard.COLS === tetrimino.fields[1]) { //shape J
                 // min + this.tetrisBoard.COLS    LEFT-
@@ -413,7 +232,7 @@ export class TetriminoRun {
         return tetrimino;
     }
 
-    private checkAndRotateTetriminoS(tetrimino: Tetrimino, min: number, max: number, newTetrimino: Tetrimino): Tetrimino {
+    public checkAndRotateTetriminoS(tetrimino: Tetrimino, min: number, max: number, newTetrimino: Tetrimino): Tetrimino {
         if (max - min === 10) { //shape S horizontal
             if (this.canRotateSHorizontal(min, max)) {
                 for (let i = 0; i < 2; i++) {
@@ -437,7 +256,7 @@ export class TetriminoRun {
     }
    
 
-    private checkAndRotateTetriminoZ(tetrimino: Tetrimino, min: number, max: number, newTetrimino: Tetrimino): Tetrimino {
+    public checkAndRotateTetriminoZ(tetrimino: Tetrimino, min: number, max: number, newTetrimino: Tetrimino): Tetrimino {
         if (max - min === 12) {//shape Z horizontal
             if (this.canRotateZHorizontal(min, max)) {
                 for (let i = 0; i < 2; i++) {
@@ -635,6 +454,5 @@ export class TetriminoRun {
         canRotate &&= this.tetrisBoard.areInTheSameLine(arrForTestLine);
         return canRotate;
     }
-
 
 }

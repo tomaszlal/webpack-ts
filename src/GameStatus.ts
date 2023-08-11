@@ -1,5 +1,5 @@
 import { GameManager } from "./GameManager";
-import { TetriminoRun } from "./tetriminoRun";
+import { TetriminoRun } from "./TetriminoRun";
 import { TetrisBoard } from "./TetrisBoard";
 
 export class GameStatus {

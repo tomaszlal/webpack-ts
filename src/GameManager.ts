@@ -4,8 +4,8 @@ import { Tetrimino } from "./model/tetimino";
 import { Directions } from "./model/directions";
 import { TypeOfTet } from "./model/TypeOfTet";
 import { TypeOfKey } from "./model/TypeOfKey";
-import { TetriminoRun } from "./tetriminoRun";
-import { GameStatus } from "./gameStatus";
+import { TetriminoRun } from "./TetriminoRun";
+import { GameStatus } from "./GameStatus";
 
 export class GameManager {
     private app: PIXI.Application;
@@ -58,7 +58,7 @@ export class GameManager {
             tetTextures.set(typeOfTet, PIXI.Texture.from(`/assets/images/tet_${typeOfTet}.png`));
         })
         console.log(tetTextures.get(TypeOfTet.L));
-        const textureEmptyBlock = PIXI.Texture.from("/assets/images/tet_empty.png");
+        const textureEmptyBlock = PIXI.Texture.from("/assets/images/tet_0.png");
         const tetBoard = this.tetrisBoard.getBoard();
         this.app.ticker.add((delta) => {
             let i = 0;
@@ -102,7 +102,7 @@ export class GameManager {
     }
 
     private generateViewBoard() {
-        const textureEmptyBlock = PIXI.Texture.from("/assets/images/tet_empty.png");
+        const textureEmptyBlock = PIXI.Texture.from("/assets/images/tet_0.png");
 
         this.tetrisBoard.getBoard().forEach((field) => {
             let block: PIXI.Sprite = new PIXI.Sprite();
@@ -138,11 +138,34 @@ export class GameManager {
         if (this.tetriminoRun.checkMove(this.tetrimino, Directions.DOWN)) {
             this.tetrimino = this.tetriminoRun.swipDown(this.tetrimino);
         } else {
+
+
+            // test
+            // console.log(`linia 21: filled ${this.tetrisBoard.checkLine(21)}`);
+            console.log(this.tetrisBoard.checkAllLines());
+            if (this.tetrisBoard.checkLine(21)){
+                this.tetrisBoard.clearLine(21);
+                this.tetrisBoard.moveLinesDown(21);
+            }
+            if (this.tetrisBoard.checkLine(20)){
+                this.tetrisBoard.clearLine(20);
+                this.tetrisBoard.moveLinesDown(20);
+            }
+            if (this.tetrisBoard.checkLine(19)) {
+                this.tetrisBoard.clearLine(19);
+                this.tetrisBoard.moveLinesDown(19);
+            }
+            if (this.tetrisBoard.checkLine(18)) {
+                this.tetrisBoard.clearLine(18);
+                this.tetrisBoard.moveLinesDown(18);
+            }
+
+
             this.randomTetrimino();
             //dodanie nowego tetrimino po braku moźliwości ruchu w dół!!!!!
 
-            // test
-            console.log(`linia 21: filled ${this.tetrisBoard.checkLine(21)}`);
+
+
 
 
 
@@ -152,7 +175,7 @@ export class GameManager {
 
     public randomTetrimino() {
         // this.tetrimino = this.tetrisBoard.insertTetrimino(TypeOfTet.Z);
-        this.tetrimino = this.tetrisBoard.insertTetrimino(this.listOfTypeOfTet[Math.floor(Math.random() * this.listOfTypeOfTet.length)]);
+        this.tetrimino = this.tetrisBoard.insertTetrimino(this.listOfTypeOfTet[Math.floor(Math.random() * (this.listOfTypeOfTet.length-1))]);
     }
 }
 
